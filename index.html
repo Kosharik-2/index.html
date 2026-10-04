@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Кошарик: Кликер</title>
+<!-- Скрипт рекламной сети AdsGram -->
+<script src="https://sad.adsgram.ai/js/sad.js"></script>
+<style>
+body {
+    background: #1a1a1a;
+    color: #fff;
+    text-align: center;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    user-select: none;
+    -webkit-user-select: none;
+}
+.game-container {
+    max-width: 400px;
+    margin: 0 auto;
+    background: #2a2a2a;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+}
+.stats {
+    font-size: 16px;
+    margin-bottom: 15px;
+    background: #333;
+    padding: 10px;
+    border-radius: 8px;
+}
+.cat-box {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    margin: 20px auto;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 4px solid #ffcc00;
+    cursor: pointer;
+    touch-action: none;
+}
+.cat-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    pointer-events: none;
+}
+.message {
+    font-size: 16px;
+    font-weight: bold;
+    color: #ffcc00;
+    min-height: 28px;
+    margin: 10px 0;
+}
+button {
+    background: #ffcc00;
+    border: none;
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: bold;
+    border-radius: 8px;
+    margin: 5px;
+    cursor: pointer;
+}
+button:active { transform: scale(0.95); }
+.ad-btn { background: #ff9800; color: #fff; }
+.menu-btn { background: #9c27b0; color: #fff; width: 100%; margin-top: 10px; }
+.back-btn { background: #607d8b; color: #fff; width: 100%; margin-top: 15px; }
+
+/* Экраны */
+.screen { display: none; }
+.screen.active { display: block; }
+
+/* Рулетка */
+.roulette-box {
+    background: #333;
+    padding: 20px;
+    border-radius: 12px;
+    margin-top: 15px;
+}
+.roulette-wheel {
+    width: 150px;
+    height: 150px;
+    margin: 15px auto;
+    border: 5px dashed #ffcc00;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    background: #222;
+    transition: transform 1s ease-in-out;
+}
+.spin-anim {
+    transform: rotate(720deg) scale(1.1);
+}
+.chances-box {
+    font-size: 12px;
+    color: #ccc;
+    text-align: left;
+    background: #222;
+    padding: 10px;
+    border-radius: 8px;
+    margin-top: 15px;
+}
+.shop-section {
+    background: #333;
+    padding: 10px;
+    border-radius: 10px;
+    margin-top: 15px;
+    text-align: left;
+}
+.shop-section h3 { margin: 0 0 10px 0; font-size: 16px; text-align: center; color: #ffcc00; }
+.item-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+.buy-btn { background: #4CAF50; color: #fff; padding: 6px 12px; font-size: 12px; }
+.buy-btn.active { background: #2196F3; }
+</style>
+</head>
+<body id="bodyBg">
+
+<div class="game-container">
+    <!-- ГЛАВНЫЙ ЭКРАН С КОТОМ -->
+    <div id="mainScreen" class="screen active">
+        <h1>🐾 Кошарик</h1>
+        
+        <div class="stats">
+            <div>🐟 Сытость: <span id="s">79</span></div>
+            <div>💵 Деньги: <span id="m">0</span></div>
+            <div>💪 Сила поглаживания: <span id="p">1</span></div>
+        </div>
+
+        <div class="message" id="msg">Проведи пальцем по коту!</div>
+
+        <div class="cat-box" id="catBox">
+            <img id="catImg" src="1000020704.jpg" alt="Кошарик" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'200\' height=\'200\'><text x=\'50%\' y=\'50%\' dominant-baseline=\'middle\' text-anchor=\'middle\' font-size=\'60\'>🐱</text></svg>'">
+        </div>
+
+        <button onclick="getMoney()">💼 Взять у спонсоров (+10)</button>
+        <button class="ad-btn" onclick="watchAd()">📺 Смотреть рекламу (+30)</button>
+        <button class="menu-btn" onclick="openScreen('rouletteScreen')">🎰 Открыть рулетку</button>
+
+        <div class="shop-section">
+            <h3>🛒 Магазин еды</h3>
+            <div class="item-row">
+                <span>Вкусный корм (+1 сила)</span>
+                <button class="buy-btn" onclick="buyFood()">Купить (<span id="c">15</span>д)</button>
+            </div>
+        </div>
+
+        <div class="shop-section">
+            <h3>👑 Гардероб котика</h3>
+            <div class="item-row">
+                <span>Обычный вид</span>
+                <button class="buy-btn" id="btn-none" onclick="setOutfit('none')">Надеть</button>
+            </div>
+            <div class="item-row">
+                <span>Шляпка сэра</span>
+                <button class="buy-btn" id="btn-hat" onclick="setOutfit('hat')">Купить (100д)</button>
+            </div>
+        </div>
+
+        <div class="shop-section">
+            <h3>🏡 Локации</h3>
+            <div class="item-row">
+                <span>Ковер (родной)</span>
+                <button class="buy-btn" id="loc-carpet" onclick="setLocation('carpet')">Выбрать</button>
+            </div>
+            <div class="item-row">
+                <span>Элитный диван (50д)</span>
+                <button class="buy-btn" id="loc-sofa" onclick="setLocation('sofa')">Купить</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ЭКРАН РУЛЕТКИ -->
+    <div id="rouletteScreen" class="screen">
+        <h1>🎰 Колесо Удачи</h1>
+        <div class="message" id="rouletteMsg">Испытай удачу 1 раз в сутки!</div>
+        
+        <div class="roulette-box">
+            <div class="roulette-wheel" id="wheel">🐱</div>
+            <button id="spinBtn" onclick="spinRoulette()">Крутить рулетку!</button>
+            <div id="timerText" style="font-size: 13px; color: #ff9800; margin-top: 8px;"></div>
+        </div>
+
+        <div class="chances-box">
+            <b>📊 Шансы выпадения:</b><br>
+            • Максимальная милота Кошарика — <b>99%</b><br>
+            • Элитный секретный приз — 0.5%<br>
+            • 💡 Редкий мудрый совет от Кота — 0.5%
+        </div>
+
+        <button class="back-btn" onclick="openScreen('mainScreen')">🏠 Главное меню с кошариком</button>
+    </div>
+</div>
+
+<script>
+const adController = window.Adsgram ? window.Adsgram.init({ blockId: "YOUR_BLOCK_ID" }) : null;
+
+let score = parseInt(localStorage.getItem('catScore')) || 79;
+let money = parseInt(localStorage.getItem('catMoney')) || 0;
+let power = parseInt(localStorage.getItem('catPower')) || 1;
+let cost = parseInt(localStorage.getItem('catCost')) || 15;
+let currentLoc = localStorage.getItem('catLoc') || 'carpet';
+let currentOutfit = localStorage.getItem('catOutfit') || 'none';
+
+updateUI();
+checkRouletteTimer();
+
+function openScreen(screenId) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(screenId).classList.add('active');
+    if(screenId === 'rouletteScreen') {
+        checkRouletteTimer();
+    }
+}
+
+let startX = 0, startY = 0;
+const catBox = document.getElementById('catBox');
+const msg = document.getElementById('msg');
+
+catBox.addEventListener('touchstart', (e) => {
+    startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
+});
+
+catBox.addEventListener('touchend', (e) => {
+    let endX = e.changedTouches[0].clientX;
+    let endY = e.changedTouches[0].clientY;
+    let dist = Math.hypot(endX - startX, endY - startY);
+
+    if (dist > 30) {
+        score += power;
+        money += Math.floor(power / 2) + 1;
+        save();
+        updateUI();
+        msg.innerText = "Муррр... 🐾✨";
+        setTimeout(() => { msg.innerText = ""; }, 1000);
+    } else {
+        msg.innerText = "ШШШ! Не бей! 😾";
+        setTimeout(() => { msg.innerText = ""; }, 1000);
+    }
+});
+
+catBox.addEventListener('click', () => {
+    msg.innerText = "ШШШ! 😾";
+    setTimeout(() => { msg.innerText = ""; }, 1000);
+});
+
+function getMoney() {
+    money += 10;
+    save();
+    updateUI();
+    msg.innerText = "+10 от спонсоров! 💵";
+    setTimeout(() => { msg.innerText = ""; }, 1000);
+}
+
+function watchAd() {
+    if (adController) {
+        adController.show()
+            .then((result) => {
+                money += 30;
+                save();
+                updateUI();
+                msg.innerText = "+30 денег за просмотр рекламы! 🎉";
+                setTimeout(() => { msg.innerText = ""; }, 1200);
+            })
+            .catch((err) => {
+                msg.innerText = "Реклама не была досмотрена ✖️";
+                setTimeout(() => { msg.innerText = ""; }, 1200);
+            });
+    } else {
+        money += 30;
+        save();
+        updateUI();
+        msg.innerText = "+30 денег! 💵";
+        setTimeout(() => { msg.innerText = ""; }, 1200);
+    }
+}
+
+function checkRouletteTimer() {
+    let lastSpin = parseInt(localStorage.getItem('catLastSpin')) || 0;
+    let now = Date.now();
+    let dayMs = 24 * 60 * 60 * 1000;
+
+    let spinBtn = document.getElementById('spinBtn');
+    let timerText = document.getElementById('timerText');
+
+    if (now - lastSpin < dayMs) {
+        let timeLeft = dayMs - (now - lastSpin);
+        let hoursLeft = Math.floor(timeLeft / (1000 * 60 * 60));
+        let minsLeft = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+        
+        spinBtn.disabled = true;
+        spinBtn.style.background = "#555";
+        timerText.innerText = `⏳ Следующая прокрутка через: ${hoursLeft}ч ${minsLeft}м`;
+    } else {
+        spinBtn.disabled = false;
+        spinBtn.style.background = "#ffcc00";
+        timerText.innerText = "✨ Рулетка доступна бесплатно!";
+    }
+}
+
+function spinRoulette() {
+    let wheel = document.getElementById('wheel');
+    let rMsg = document.getElementById('rouletteMsg');
+    let spinBtn = document.getElementById('spinBtn');
+
+    spinBtn.disabled = true;
+    wheel.classList.add('spin-anim');
+    rMsg.innerText = "Крутим барабан... 🐾";
+
+    setTimeout(() => {
+        wheel.classList.remove('spin-anim');
+        
+        let chance = Math.random() * 100;
+
+        if (chance < 0.5) {
+            const tips = [
+                "💡 Мудрый совет Кота: Тот, кто ладит с Кошариком, обречен на счастливый день.",
+                "💡 Мудрый совет Кота: Самый сладенький котик заслуживает дополнительных поглаживаний."
+            ];
+            let tip = tips[Math.floor(Math.random() * tips.length)];
+            rMsg.innerText = tip;
+        } 
+        else if (chance < 1.0) {
+            money += 300;
+            rMsg.innerText = "🌟 СУПЕР-ПРИЗ! Кошарик принес +300 монет! 💰🎉";
+        }
+        else {
+            const cuteness = [
+                "🐾 Кошарик сладко потянулся и стал еще милее! Настроение на высоте! 🥰",
+                "💖 Вы посмотрели на Кошарика, и он состроил такую сладенькую мордашку! Умиление 99.9% ✨",
+                "🌸 Кошарик лег пузиком кверху. Такой миленький, что просто слов нет! 😻",
+                "🍯 Наш Кошарик сегодня слаще меда! Абсолютная милота дня получена! 🐾"
+            ];
+            let cuteText = cuteness[Math.floor(Math.random() * cuteness.length)];
+            rMsg.innerText = cuteText;
+        }
+
+        localStorage.setItem('catLastSpin', Date.now());
+        save();
+        updateUI();
+        checkRouletteTimer();
+
+    }, 1200);
+}
+
+function buyFood() {
+    if (money >= cost) {
+        money -= cost;
+        power += 1;
+        cost = Math.round(cost * 1.5);
+        save();
+        updateUI();
+        msg.innerText = "Ням-ням! Корм куплен 🐟";
+        setTimeout(() => { msg.innerText = ""; }, 1000);
+    } else {
+        msg.innerText = "Мало денег! ✖️";
+        setTimeout(() => { msg.innerText = ""; }, 1000);
+    }
+}
+
+function setOutfit(outfit) {
+    if (outfit === 'hat') {
+        let hatCost = 100;
+        if (money >= hatCost || localStorage.getItem('hatUnlocked') === 'true') {
+            if (localStorage.getItem('hatUnlocked') !== 'true') {
+                money -= hatCost;
+                localStorage.setItem('hatUnlocked', 'true');
+            }
+            currentOutfit = 'hat';
+            msg.innerText = "Шляпа надета! 🎩";
+        } else {
+            msg.innerText = "Шляпа стоит 100 денег! 🎩";
+            setTimeout(() => { msg.innerText = ""; }, 1000);
+            return;
+        }
+    } else {
+        currentOutfit = 'none';
+        msg.innerText = "Обычный вид 🐱";
+    }
+    save();
+    updateUI();
+    setTimeout(() => { msg.innerText = ""; }, 1000);
+}
+
+function setLocation(loc) {
+    if (loc === 'sofa') {
+        let sofaCost = 50;
+        if (money >= sofaCost || localStorage.getItem('sofaUnlocked') === 'true') {
+            if (localStorage.getItem('sofaUnlocked') !== 'true') {
+                money -= sofaCost;
+                localStorage.setItem('sofaUnlocked', 'true');
+            }
+            currentLoc = 'sofa';
+        } else {
+            msg.innerText = "Диван стоит 50 денег! 🛋️";
+            setTimeout(() => { msg.innerText = ""; }, 1000);
+            return;
+        }
+    } else {
+        currentLoc = 'carpet';
+    }
+    save();
+    updateUI();
+    msg.innerText = "Локация обновлена! 🏡";
+    setTimeout(() => { msg.innerText = ""; }, 1000);
+}
+
+function save() {
+    localStorage.setItem('catScore', score);
+    localStorage.setItem('catMoney', money);
+    localStorage.setItem('catPower', power);
+    localStorage.setItem('catCost', cost);
+    localStorage.setItem('catLoc', currentLoc);
+    localStorage.setItem('catOutfit', currentOutfit);
+}
+
+function updateUI() {
+    document.getElementById('s').innerText = score;
+    document.getElementById('m').innerText = money;
+    document.getElementById('p').innerText = power;
+    document.getElementById('c').innerText = cost;
+
+    if (currentLoc === 'sofa') {
+        document.getElementById('bodyBg').style.background = '#362214';
+        document.getElementById('loc-sofa').innerText = 'Выбрано';
+        document.getElementById('loc-sofa').classList.add('active');
+        document.getElementById('loc-carpet').innerText = 'Выбрать';
+        document.getElementById('loc-carpet').classList.remove('active');
+    } else {
+        document.getElementById('bodyBg').style.background = '#1a1a1a';
+        document.getElementById('loc-carpet').innerText = 'Выбрано';
+        document.getElementById('loc-carpet').classList.add('active');
+        document.getElementById('loc-sofa').innerText = localStorage.getItem('sofaUnlocked') === 'true' ? 'Выбрать' : 'Купить';
+        document.getElementById('loc-sofa').classList.remove('active');
+    }
+
+    if (currentOutfit === 'hat') {
+        document.getElementById('btn-hat').innerText = 'Надето';
+        document.getElementById('btn-hat').classList.add('active');
+        document.getElementById('btn-none').innerText = 'Надеть';
+        document.getElementById('btn-none').classList.remove('active');
+    } else {
+        document.getElementById('btn-none').innerText = 'Надето';
+        document.getElementById('btn-none').classList.add('active');
+        document.getElementById('btn-hat').innerText = localStorage.getItem('hatUnlocked') === 'true' ? 'Надеть' : 'Купить (100д)';
+        document.getElementById('btn-hat').classList.remove('active');
+    }
+}
+</script>
+</body>
+</html>
