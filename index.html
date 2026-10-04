@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Кошарик: Школьная жизнь</title>
+<!-- Скрипт рекламной сети AdsGram -->
+<script src="https://sad.adsgram.ai/js/sad.js"></script>
+<style>
+body {
+    background: #1a1a1a;
+    color: #fff;
+    text-align: center;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 10px;
+    user-select: none;
+    -webkit-user-select: none;
+}
+.game-container {
+    max-width: 400px;
+    margin: 0 auto;
+    background: #2a2a2a;
+    padding: 15px;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+}
+.message {
+    font-size: 15px;
+    font-weight: bold;
+    color: #ffcc00;
+    min-height: 28px;
+    margin: 8px 0;
+}
+button {
+    background: #ffcc00;
+    border: none;
+    padding: 10px 15px;
+    font-size: 13px;
+    font-weight: bold;
+    border-radius: 8px;
+    margin: 4px;
+    cursor: pointer;
+}
+button:active { transform: scale(0.95); }
+.ad-btn { background: #ff9800; color: #fff; }
+.back-btn { background: #607d8b; color: #fff; width: 100%; margin-top: 10px; }
+
+/* Навигационное меню (Вкладки) */
+.nav-bar {
+    display: flex;
+    justify-content: space-around;
+    background: #222;
+    padding: 8px 4px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+}
+.nav-btn {
+    background: #333;
+    color: #ccc;
+    font-size: 11px;
+    padding: 6px 8px;
+    flex: 1;
+    margin: 0 2px;
+}
+.nav-btn.active {
+    background: #ffcc00;
+    color: #000;
+}
+
+/* Экраны */
+.screen { display: none; }
+.screen.active { display: block; }
+
+/* Главный кот */
+.cat-box {
+    position: relative;
+    width: 180px;
+    height: 180px;
+    margin: 15px auto;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 4px solid #ffcc00;
+    cursor: pointer;
+    touch-action: none;
+}
+.cat-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    pointer-events: none;
+}
+
+/* Баланс / Статы */
+.stats-box {
+    background: #333;
+    padding: 15px;
+    border-radius: 10px;
+    text-align: left;
+    font-size: 15px;
+}
+.stat-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #444;
+    padding-bottom: 6px;
+}
+
+/* Магазин и Школа */
+.section-block {
+    background: #333;
+    padding: 12px;
+    border-radius: 10px;
+    margin-top: 12px;
+    text-align: left;
+}
+.section-block h3 { margin: 0 0 10px 0; font-size: 15px; text-align: center; color: #ffcc00; }
+.item-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    font-size: 13px;
+}
+.buy-btn { background: #4CAF50; color: #fff; padding: 6px 10px; font-size: 11px; }
+.buy-btn.active { background: #2196F3; }
+
+/* Рулетка */
+.roulette-box {
+    background: #333;
+    padding: 15px;
+    border-radius: 12px;
+    margin-top: 10px;
+}
+.roulette-wheel {
+    width: 130px;
+    height: 130px;
+    margin: 10px auto;
+    border: 5px dashed #ffcc00;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    background: #222;
+    transition: transform 1s ease-in-out;
+}
+.spin-anim { transform: rotate(720deg) scale(1.1); }
+.chances-box {
+    font-size: 11px;
+    color: #ccc;
+    text-align: left;
+    background: #222;
+    padding: 8px;
+    border-radius: 8px;
+    margin-top: 10px;
+}
+</style>
+</head>
+<body id="bodyBg">
+
+<div class="game-container">
+    <h1>🐾 Кошарик</h1>
+
+    <!-- ВКЛАДКИ НАВИГАЦИИ -->
+    <div class="nav-bar">
+        <button class="nav-btn active" id="nav-main" onclick="openScreen('mainScreen')">🏠 Главная</button>
+        <button class="nav-btn" id="nav-stats" onclick="openScreen('statsScreen')">📊 Баланс</button>
+        <button class="nav-btn" id="nav-shop" onclick="openScreen('shopScreen')">🛒 Магазин</button>
+        <button class="nav-btn" id="nav-school" onclick="openScreen('schoolScreen')">🏫 Школа</button>
+        <button class="nav-btn" id="nav-roulette" onclick="openScreen('rouletteScreen')">🎰 Рулетка</button>
+    </div>
+
+    <!-- 1. ГЛАВНЫЙ ЭКРАН -->
+    <div id="mainScreen" class="screen active">
+        <div class="message" id="msg">Гладь котика или отправляйся в школу!</div>
+
+        <div class="cat-box" id="catBox">
+            <img id="catImg" src="1000020704.jpg" alt="Кошарик" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'200\' height=\'200\'><text x=\'50%\' y=\'50%\' dominant-baseline=\'middle\' text-anchor=\'middle\' font-size=\'60\'>🐱</text></svg>'">
+        </div>
+
+        <button onclick="getMoney()">💼 Взять у спонсоров (+10)</button>
+        <button class="ad-btn" onclick="watchAd()">📺 Реклама (+30)</button>
+        <button class="menu-btn" style="background:#4CAF50; width:100%;" onclick="openScreen('schoolScreen')">🎒 Идти на уроки в школу</button>
+    </div>
+
+    <!-- 2. ЭКРАН БАЛАНСА И СТАТИСТИКИ -->
+    <div id="statsScreen" class="screen">
+        <h2>📊 Баланс и Статусы</h2>
+        <div class="stats-box">
+            <div class="stat-row">
+                <span>💵 Деньги:</span>
+                <b id="m" style="color:#ffcc00;">0</b>
+            </div>
+            <div class="stat-row">
+                <span>🐟 Сытость:</span>
+                <b id="s" style="color:#4CAF50;">79</b>
+            </div>
+            <div class="stat-row">
+                <span>❤️ Здоровье:</span>
+                <b id="hp" style="color:#ff5252;">100</b>
+            </div>
+            <div class="stat-row">
+                <span>🧠 Знания:</span>
+                <b id="kb" style="color:#2196F3;">0</b>
+            </div>
+            <div class="stat-row">
+                <span>💪 Сила поглаживания:</span>
+                <b id="p">1</b>
+            </div>
+        </div>
+        <button class="back-btn" onclick="openScreen('mainScreen')">🏠 На главную</button>
+    </div>
+
+    <!-- 3. ЭКРАН МАГАЗИНА -->
+    <div id="shopScreen" class="screen">
+        <h2>🛒 Магазин Кошарика</h2>
+        
+        <div class="section-block">
+            <h3>🍖 Еда и Сила</h3>
+            <div class="item-row">
+                <span>Вкусный корм (+1 сила)</span>
+                <button class="buy-btn" onclick="buyFood()">Купить (<span id="c">15</span>д)</button>
+            </div>
+        </div>
+
+        <div class="section-block">
+            <h3>👑 Гардероб</h3>
+            <div class="item-row">
+                <span>Обычный вид</span>
+                <button class="buy-btn" id="btn-none" onclick="setOutfit('none')">Надеть</button>
+            </div>
+            <div class="item-row">
+                <span>Шляпка сэра</span>
+                <button class="buy-btn" id="btn-hat" onclick="setOutfit('hat')">Купить (100д)</button>
+            </div>
+        </div>
+
+        <div class="section-block">
+            <h3>🏡 Локации</h3>
+            <div class="item-row">
+                <span>Ковер (родной)</span>
+                <button class="buy-btn" id="loc-carpet" onclick="setLocation('carpet')">Выбрать</button>
+            </div>
+            <div class="item-row">
+                <span>Элитный диван</span>
+                <button class="buy-btn" id="loc-sofa" onclick="setLocation('sofa')">Купить (50д)</button>
+            </div>
+        </div>
+
+        <button class="back-btn" onclick="openScreen('mainScreen')">🏠 На главную</button>
+    </div>
+
+    <!-- 4. ЭКРАН ШКОЛЫ И УРОКОВ -->
+    <div id="schoolScreen" class="screen">
+        <h2>🏫 Школа Кошарика</h2>
+        <div class="message" id="schoolMsg">Учись усердно, получай знания!</div>
+        
+        <div class="section-block" style="text-align: center;">
+            <p style="font-size: 13px; color: #ccc; margin-top:0;">Выбери урок для котика:</p>
+            <button style="width:100%; background:#2196F3; color:#fff;" onclick="doLesson('math')">📐 Урок математики (+5 знаний)</button>
+            <button style="width:100%; background:#9c27b0; color:#fff;" onclick="doLesson('fish')">🐟 Рыбоведение (+3 знания, +2 сытости)</button>
+            <button style="width:100%; background:#e91e63; color:#fff;" onclick="doLesson('sleep')">💤 Искусство дремоты (+10 здоровья)</button>
+        </div>
+
+        <button class="back-btn" onclick="openScreen('mainScreen')">🚪 Уйти из школы в главное меню</button>
+    </div>
+
+    <!-- 5. ЭКРАН РУЛЕТКИ -->
+    <div id="rouletteScreen" class="screen">
+        <h2>🎰 Колесо Удачи</h2>
+        <div class="message" id="rouletteMsg">Испытай удачу 1 раз в сутки!</div>
+        
+        <div class="roulette-box">
+            <div class="roulette-wheel" id="wheel">🐱</div>
+            <button id="spinBtn" onclick="spinRoulette()">Крутить рулетку!</button>
+            <div id="timerText" style="font-size: 12px; color: #ff9800; margin-top: 6px;"></div>
+        </div>
+
+        <div class="chances-box">
+            <b>📊 Шансы выпадения:</b><br>
+            • Максимальная милота Кошарика — <b>99%</b><br>
+            • Элитный секретный приз — 0.5%<br>
+            • 💡 Редкий мудрый совет — 0.5%
+        </div>
+
+        <button class="back-btn" onclick="openScreen('mainScreen')">🏠 На главную</button>
+    </div>
+</div>
+
+<script>
+const adController = window.Adsgram ? window.Adsgram.init({ blockId: "YOUR_BLOCK_ID" }) : null;
+
+let score = parseInt(localStorage.getItem('catScore')) || 79;
+let money = parseInt(localStorage.getItem('catMoney')) || 0;
+let power = parseInt(localStorage.getItem('catPower')) || 1;
+let cost = parseInt(localStorage.getItem('catCost')) || 15;
+let health = parseInt(localStorage.getItem('catHealth')) || 100;
+let knowledge = parseInt(localStorage.getItem('catKnowledge')) || 0;
+let currentLoc = localStorage.getItem('catLoc') || 'carpet';
+let currentOutfit = localStorage.getItem('catOutfit') || 'none';
+
+updateUI();
+checkRouletteTimer();
+
+function openScreen(screenId) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    
+    document.getElementById(screenId).classList.add('active');
+    
+    if(screenId === 'mainScreen') document.getElementById('nav-main').classList.add('active');
+    if(screenId === 'statsScreen') document.getElementById('nav-stats').classList.add('active');
+    if(screenId === 'shopScreen') document.getElementById('nav-shop').classList.add('active');
+    if(screenId === 'schoolScreen') document.getElementById('nav-school').classList.add('active');
+    if(screenId === 'rouletteScreen') {
+        document.getElementById('nav-roulette').classList.add('active');
+        checkRouletteTimer();
+    }
+}
+
+let startX = 0, startY = 0;
+const catBox = document.getElementById('catBox');
+const msg = document.getElementById('msg');
+
+catBox.addEventListener('touchstart', (e) => {
+    startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
+});
+
+catBox.addEventListener('touchend', (e) => {
+    let endX = e.changedTouches[0].clientX;
+    let endY = e.changedTouches[0].clientY;
+    let dist = Math.hypot(endX - startX, endY - startY);
+
+    if (dist > 30) {
+        score += power;
+        money += Math.floor(power / 2) + 1;
+        save();
+        updateUI();
+        msg.innerText = "Муррр... 🐾✨";
+        setTimeout(() => { msg.innerText = ""; }, 1000);
+    } else {
+        msg.innerText = "ШШШ! Не бей! 😾";
+        setTimeout(() => { msg.innerText = ""; }, 1000);
+    }
+});
+
+catBox.addEventListener('click', () => {
+    msg.innerText = "ШШШ! 😾";
+    setTimeout(() => { msg.innerText = ""; }, 1000);
+});
+
+function getMoney() {
+    money += 10;
+    save();
+    updateUI();
+    msg.innerText = "+10 от спонсоров! 💵";
+    setTimeout(() => { msg.innerText = ""; }, 1000);
+}
+
+function watchAd() {
+    if (adController) {
+        adController.show()
+            .then((result) => {
+                money += 30;
+                save();
+                updateUI();
+                msg.innerText = "+30 денег за рекламу! 🎉";
+                setTimeout(() => { msg.innerText = ""; }, 1200);
+            })
+            .catch((err) => {
+                msg.innerText = "Реклама не была досмотрена ✖️";
+                setTimeout(() => { msg.innerText = ""; }, 1200);
+            });
+    } else {
+        money += 30;
+        save();
+        updateUI();
+        msg.innerText = "+30 денег! 💵";
+        setTimeout(() => { msg.innerText = ""; }, 1200);
+    }
+}
+
+// Уроки в школе
+function doLesson(type) {
+    let sMsg = document.getElementById('schoolMsg');
+    if (type === 'math') {
+        knowledge += 5;
+        sMsg.innerText = "📐 Кошарик решил примеры! +5 знаний 🧠";
+    } else if (type === 'fish') {
+        knowledge += 3;
+        score = Math.min(100, score + 2);
+        sMsg.innerText = "🐟 Урок рыбной ловли пройден! +3 знания, +2 сытости";
+    } else if (type === 'sleep') {
+        health = Math.min(100, health + 10);
+        sMsg.innerText = "💤 Отличный сон на парте! Здоровье +10 ❤️";
+    }
+    save();
+    updateUI();
+}
+
+function checkRouletteTimer() {
+    let lastSpin = parseInt(localStorage.getItem('catLastSpin')) || 0;
+    let now = Date.now();
+    let dayMs = 24 * 60 * 60 * 1000;
+
+    let spinBtn = document.getElementById('spinBtn');
+    let timerText = document.getElementById('timerText');
+
+    if (now - lastSpin < dayMs) {
+        let timeLeft = dayMs - (now - lastSpin);
+        let hoursLeft = Math.floor(timeLeft / (1000 * 60 * 60));
+        let minsLeft = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+        
+        spinBtn.disabled = true;
+        spinBtn.style.background = "#555";
+        timerText.innerText = `⏳ Следующая прокрутка через: ${hoursLeft}ч ${minsLeft}м`;
+    } else {
+        spinBtn.disabled = false;
+        spinBtn.style.background = "#ffcc00";
+        timerText.innerText = "✨ Рулетка доступна бесплатно!";
+    }
+}
+
+function spinRoulette() {
+    let wheel = document.getElementById('wheel');
+    let rMsg = document.getElementById('rouletteMsg');
+    let spinBtn = document.getElementById('spinBtn');
+
+    spinBtn.disabled = true;
+    wheel.classList.add('spin-anim');
+    rMsg.innerText = "Крутим барабан... 🐾";
+
+    setTimeout(() => {
+        wheel.classList.remove('spin-anim');
+        let chance = Math.random() * 100;
+
+        if (chance < 0.5) {
+            const tips = [
+                "💡 Мудрый совет Кота: Тот, кто учится с Кошариком, сдает все экзамены на отлично!",
+                "💡 Мудрый совет Кота: Перерыв на поглаживание повышает продуктивность на 99%."
+            ];
+            rMsg.innerText = tips[Math.floor(Math.random() * tips.length)];
+        } 
+        else if (chance < 1.0) {
+            money += 300;
+            rMsg.innerText = "🌟 СУПЕР-ПРИЗ! Кошарик нашел клад и принес +300 монет! 💰🎉";
+        }
+        else {
+            const cuteness = [
+                "🐾 Кошарик сладко потянулся и стал еще милее! Настроение на высоте! 🥰",
+                "💖 Кошарик состроил такую сладенькую мордашку! Умиление 99.9% ✨",
+                "🌸 Кошарик лег пузиком кверху. Такой миленький, что просто слов нет! 😻",
+                "🍯 Наш Кошарик сегодня слаще меда! Абсолютная милота дня получена! 🐾"
+            ];
+            rMsg.innerText = cuteness[Math.floor(Math.random() * cuteness.length)];
+        }
+
+        localStorage.setItem('catLastSpin', Date.now());
+        save();
+        updateUI();
+        checkRouletteTimer();
+
+    }, 1200);
+}
+
+function buyFood() {
+    if (money >= cost) {
+        money -= cost;
+        power += 1;
+        cost = Math.round(cost * 1.5);
+        save();
+        updateUI();
+        msg.innerText = "Ням-ням! Корм куплен 🐟";
+        setTimeout(() => { msg.innerText = ""; }, 1000);
+    } else {
+        msg.innerText = "Мало денег! ✖️";
+        setTimeout(() => { msg.innerText = ""; }, 1000);
+    }
+}
+
+function setOutfit(outfit) {
+    if (outfit === 'hat') {
+        let hatCost = 100;
+        if (money >= hatCost || localStorage.getItem('hatUnlocked') === 'true') {
+            if (localStorage.getItem('hatUnlocked') !== 'true') {
+                money -= hatCost;
+                localStorage.setItem('hatUnlocked', 'true');
+            }
+            currentOutfit = 'hat';
+            msg.innerText = "Шляпа надета! 🎩";
+        } else {
+            msg.innerText = "Шляпа стоит 100 денег! 🎩";
+            setTimeout(() => { msg.innerText = ""; }, 1000);
+            return;
+        }
+    } else {
+        currentOutfit = 'none';
+        msg.innerText = "Обычный вид 🐱";
+    }
+    save();
+    updateUI();
+    setTimeout(() => { msg.innerText = ""; }, 1000);
+}
+
+function setLocation(loc) {
+    if (loc === 'sofa') {
+        let sofaCost = 50;
+        if (money >= sofaCost || localStorage.getItem('sofaUnlocked') === 'true') {
+            if (localStorage.getItem('sofaUnlocked') !== 'true') {
+                money -= sofaCost;
+                localStorage.setItem('sofaUnlocked', 'true');
+            }
+            currentLoc = 'sofa';
+        } else {
+            msg.innerText = "Диван стоит 50 денег! 🛋️";
+            setTimeout(() => { msg.innerText = ""; }, 1000);
+            return;
+        }
+    } else {
+        currentLoc = 'carpet';
+    }
+    save();
+    updateUI();
+    msg.innerText = "Локация обновлена! 🏡";
+    setTimeout(() => { msg.innerText = ""; }, 1000);
+}
+
+function save() {
+    localStorage.setItem('catScore', score);
+    localStorage.setItem('catMoney', money);
+    localStorage.setItem('catPower', power);
+    localStorage.setItem('catCost', cost);
+    localStorage.setItem('catHealth', health);
+    localStorage.setItem('catKnowledge', knowledge);
+    localStorage.setItem('catLoc', currentLoc);
+    localStorage.setItem('catOutfit', currentOutfit);
+}
+
+function updateUI() {
+    document.getElementById('s').innerText = score;
+    document.getElementById('m').innerText = money;
+    document.getElementById('p').innerText = power;
+    document.getElementById('c').innerText = cost;
+    document.getElementById('hp').innerText = health;
+    document.getElementById('kb').innerText = knowledge;
+
+    if (currentLoc === 'sofa') {
+        document.getElementById('bodyBg').style.background = '#362214';
+        document.getElementById('loc-sofa').innerText = 'Выбрано';
+        document.getElementById('loc-sofa').classList.add('active');
+        document.getElementById('loc-carpet').innerText = 'Выбрать';
+        document.getElementById('loc-carpet').classList.remove('active');
+    } else {
+        document.getElementById('bodyBg').style.background = '#1a1a1a';
+        document.getElementById('loc-carpet').innerText = 'Выбрано';
+        document.getElementById('loc-carpet').classList.add('active');
+        document.getElementById('loc-sofa').innerText = localStorage.getItem('sofaUnlocked') === 'true' ? 'Выбрать' : 'Купить (50д)';
+        document.getElementById('loc-sofa').classList.remove('active');
+    }
+
+    if (currentOutfit === 'hat') {
+        document.getElementById('btn-hat').innerText = 'Надето';
+        document.getElementById('btn-hat').classList.add('active');
+        document.getElementById('btn-none').innerText = 'Надеть';
+        document.getElementById('btn-none').classList.remove('active');
+    } else {
+        document.getElementById('btn-none').innerText = 'Надето';
+        document.getElementById('btn-none').classList.add('active');
+        document.getElementById('btn-hat').innerText = localStorage.getItem('hatUnlocked') === 'true' ? 'Надеть' : 'Купить (100д)';
+        document.getElementById('btn-hat').classList.remove('active');
+    }
+}
+</script>
+</body>
+</html>
