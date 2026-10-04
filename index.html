@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Кошарик: Школьная жизнь</title>
+<!-- Скрипт рекламной сети AdsGram -->
+<script src="https://sad.adsgram.ai/js/sad.js"></script>
+<style>
+body {
+    background: #1a1a1a;
+    color: #fff;
+    text-align: center;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 10px;
+    user-select: none;
+    -webkit-user-select: none;
+}
+.game-container {
+    max-width: 400px;
+    margin: 0 auto;
+    background: #2a2a2a;
+    padding: 15px;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+}
+.message {
+    font-size: 15px;
+    font-weight: bold;
+    color: #ffcc00;
+    min-height: 28px;
+    margin: 8px 0;
+}
+button {
+    background: #ffcc00;
+    border: none;
+    padding: 10px 15px;
+    font-size: 13px;
+    font-weight: bold;
+    border-radius: 8px;
+    margin: 4px;
+    cursor: pointer;
+}
+button:active { transform: scale(0.95); }
+.ad-btn { background: #ff9800; color: #fff; }
+.back-btn { background: #607d8b; color: #fff; width: 100%; margin-top: 10px; }
+
+/* Экран выбора языка (Стартовый) */
+#langScreen {
+    display: block;
+}
+.search-input {
+    width: 90%;
+    padding: 10px;
+    font-size: 14px;
+    border-radius: 8px;
+    border: 2px solid #ffcc00;
+    background: #111;
+    color: #fff;
+    margin: 10px 0;
+    text-align: center;
+}
+.countries-list {
+    max-height: 200px;
+    overflow-y: auto;
+    background: #222;
+    border-radius: 8px;
+    padding: 5px;
+    margin-top: 10px;
+    text-align: left;
+}
+.country-item {
+    padding: 8px 10px;
+    font-size: 13px;
+    border-bottom: 1px solid #333;
+    cursor: pointer;
+    border-radius: 5px;
+}
+.country-item:hover {
+    background: #333;
+    color: #ffcc00;
+}
+
+/* Навигационное меню (Вкладки) */
+.nav-bar {
+    display: flex;
+    justify-content: space-around;
+    background: #222;
+    padding: 8px 4px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+}
+.nav-btn {
+    background: #333;
+    color: #ccc;
+    font-size: 11px;
+    padding: 6px 6px;
+    flex: 1;
+    margin: 0 2px;
+}
+.nav-btn.active {
+    background: #ffcc00;
+    color: #000;
+}
+
+/* Экраны игры */
+.screen { display: none; }
+.screen.active { display: block; }
+
+/* Главный кот */
+.cat-box {
+    position: relative;
+    width: 180px;
+    height: 180px;
+    margin: 15px auto;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 4px solid #ffcc00;
+    cursor: pointer;
+    touch-action: none;
+}
+.cat-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    pointer-events: none;
+}
+
+/* Баланс / Статы */
+.stats-box {
+    background: #333;
+    padding: 15px;
+    border-radius: 10px;
+    text-align: left;
+    font-size: 15px;
+}
+.stat-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #444;
+    padding-bottom: 6px;
+}
+
+/* Магазин и Школа */
+.section-block {
+    background: #333;
+    padding: 12px;
+    border-radius: 10px;
+    margin-top: 12px;
+    text-align: left;
+}
+.section-block h3 { margin: 0 0 10px 0; font-size: 15px; text-align: center; color: #ffcc00; }
+.item-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    font-size: 13px;
+}
+.buy-btn { background: #4CAF50; color: #fff; padding: 6px 10px; font-size: 11px; }
+.buy-btn.active { background: #2196F3; }
+
+/* Классы в школе */
+.grades-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+    margin-bottom: 10px;
+}
+.grade-btn {
+    background: #3f51b5;
+    color: #fff;
+    font-size: 12px;
+    padding: 8px;
+    margin: 0;
+}
+.subject-btn {
+    background: #009688;
+    color: #fff;
+    width: 100%;
+    margin: 4px 0;
+    text-align: left;
+    padding: 10px 12px;
+}
+
+/* Урочная зона */
+.class-room {
+    background: #222;
+    padding: 12px;
+    border-radius: 10px;
+    margin-top: 10px;
+}
+.task-input {
+    padding: 8px;
+    font-size: 16px;
+    width: 150px;
+    text-align: center;
+    border-radius: 6px;
+    border: 2px solid #ffcc00;
+    background: #111;
+    color: #fff;
+    margin: 8px 0;
+}
+
+/* АНИМАЦИЯ ПОХОДА В ШКОЛУ */
+#schoolAnimationScreen {
+    display: none;
+    text-align: center;
+    padding: 30px 10px;
+}
+.road-animation-box {
+    position: relative;
+    width: 100%;
+    height: 140px;
+    background: #444;
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 15px 0;
+    border: 2px dashed #ffcc00;
+}
+.walking-cat {
+    position: absolute;
+    bottom: 15px;
+    left: -50px;
+    font-size: 40px;
+    animation: walkToSchool 2.5s linear forwards;
+}
+.school-building {
+    position: absolute;
+    right: 15px;
+    bottom: 15px;
+    font-size: 45px;
+}
+@keyframes walkToSchool {
+    0% { left: -50px; transform: scaleX(1); }
+    50% { transform: translateY(-5px) scaleX(1); }
+    100% { left: 260px; transform: scaleX(1); }
+}
+
+/* Дневник оценок */
+.grade-badge {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-weight: bold;
+    font-size: 16px;
+    margin: 5px;
+}
+.mark-5 { background: #4CAF50; color: #fff; }
+.mark-4 { background: #8BC34A; color: #000; }
+.mark-3 { background: #FF9800; color: #fff; }
+.mark-2 { background: #f44336; color: #fff; }
+
+/* Рулетка */
+.roulette-box {
+    background: #333;
+    padding: 15px;
+    border-radius: 12px;
+    margin-top: 10px;
+}
+.roulette-wheel {
+    width: 130px;
+    height: 130px;
+    margin: 10px auto;
+    border: 5px dashed #ffcc00;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    background: #222;
+    transition: transform 1s ease-in-out;
+}
+.spin-anim { transform: rotate(720deg) scale(1.1); }
+.chances-box {
+    font-size: 11px;
+    color: #ccc;
+    text-align: left;
+    background: #222;
+    padding: 8px;
+    border-radius: 8px;
+    margin-top: 10px;
+}
+</style>
+</head>
+<body id="bodyBg">
+
+<div class="game-container">
+    <h1 id="mainTitle">🐾 Кошарик</h1>
+
+    <!-- СТАРТОВЫЙ ЭКРАН ВЫБОРА ЯЗЫКА И СТРАН -->
+    <div id="langScreen" class="screen active">
+        <div class="message" id="langTitle">Какой вы хотите язык?</div>
+        <div style="font-size: 24px; margin: 5px 0;">🎄 🌍</div>
+        
+        <div class="section-block">
+            <h3 id="langSubtitle" style="margin-bottom:5px;">What language do you want to choose?</h3>
+            <input type="text" id="countrySearch" class="search-input" placeholder="🔍 Поиск страны / Search country..." oninput="filterCountries()">
+            
+            <div class="countries-list" id="countriesList"></div>
+        </div>
+
+        <button id="startBtn" style="background:#4CAF50; color:#fff; width:100%; margin-top:15px;" onclick="enterGame()">🚀 Начать игру / Start Game</button>
+    </div>
+
+    <!-- ОСНОВНОЕ ИГРОВОЕ МЕНЮ (скрыто до выбора языка) -->
+    <div id="gameMainWrapper" style="display:none;">
+        <!-- ВКЛАДКИ НАВИГАЦИИ -->
+        <div class="nav-bar">
+            <button class="nav-btn active" id="nav-main" onclick="openScreen('mainScreen')">🏠 <span id="nHome">Дом</span></button>
+            <button class="nav-btn" id="nav-stats" onclick="openScreen('statsScreen')">📊 <span id="nStats">Статы</span></button>
+            <button class="nav-btn" id="nav-shop" onclick="openScreen('shopScreen')">🛒 <span id="nShop">Магазин</span></button>
+            <button class="nav-btn" id="nav-school" onclick="triggerSchoolWalk()">🏫 <span id="nSchool">Школа</span></button>
+            <button class="nav-btn" id="nav-roulette" onclick="openScreen('rouletteScreen')">🎰 <span id="nLucky">Удача</span></button>
+        </div>
+
+        <!-- 1. ГЛАВНЫЙ ЭКРАН -->
+        <div id="mainScreen" class="screen active">
+            <div class="message" id="msg">Гладь котика или отправляйся на учебу!</div>
+
+            <div class="cat-box" id="catBox">
+                <img id="catImg" src="1000020704.jpg" alt="Кошарик" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'200\' height=\'200\'><text x=\'50%\' y=\'50%\' dominant-baseline=\'middle\' text-anchor=\'middle\' font-size=\'60\'>🐱</text></svg>'">
+            </div>
+
+            <button id="btnSponsor" onclick="getMoney()">💼 Деньги от спонсоров (+10)</button>
+            <button class="ad-btn" id="btnAd" onclick="watchAd()">📺 Смотреть рекламу (+30)</button>
+            <button class="menu-btn" style="background:#4CAF50; width:100%;" onclick="triggerSchoolWalk()">🎒 Идти в школу</button>
+        </div>
+
+        <!-- АНИМАЦИЯ ПОХОДА В ШКОЛУ -->
+        <div id="schoolAnimationScreen" class="screen">
+            <h2 id="animTitle">🏫 Путь в школу...</h2>
+            <div class="message" id="animMsg">Кошарик выходит из дома и спешит на урок! 🎒🔔</div>
+            <div class="road-animation-box">
+                <div class="walking-cat">🐈🐾</div>
+                <div class="school-building">🏫</div>
+            </div>
+            <p id="animSub" style="font-size:12px; color:#aaa;">Звенит школьный звонок...</p>
+        </div>
+
+        <!-- 2. ЭКРАН БАЛАНСА И СТАТИСТИКИ -->
+        <div id="statsScreen" class="screen">
+            <h2 id="statsTitle">📊 Баланс и Статистика</h2>
+            <div class="stats-box">
+                <div class="stat-row">
+                    <span id="stMoney">💵 Деньги:</span>
+                    <b id="m" style="color:#ffcc00;">0</b>
+                </div>
+                <div class="stat-row">
+                    <span id="stFullness">🐟 Сытость:</span>
+                    <b id="s" style="color:#4CAF50;">79</b>
+                </div>
+                <div class="stat-row">
+                    <span id="stHealth">❤️ Здоровье:</span>
+                    <b id="hp" style="color:#ff5252;">100</b>
+                </div>
+                <div class="stat-row">
+                    <span id="stKnowledge">🧠 Знания:</span>
+                    <b id="kb" style="color:#2196F3;">0</b>
+                </div>
+                <div class="stat-row">
+                    <span id="stPower">💪 Сила питомца:</span>
+                    <b id="p">1</b>
+                </div>
+            </div>
+            <button class="back-btn" onclick="openScreen('mainScreen')">🏠 На главную</button>
+        </div>
+
+        <!-- 3. ЭКРАН МАГАЗИНА -->
+        <div id="shopScreen" class="screen">
+            <h2 id="shopTitle">🛒 Кошачий магазин</h2>
+            
+            <div class="section-block">
+                <h3 id="shopFoodTitle">🍖 Еда и Сила</h3>
+                <div class="item-row">
+                    <span id="foodItemName">Вкусная еда (+1 Сила)</span>
+                    <button class="buy-btn" id="buyFoodBtn" onclick="buyFood()">Купить (<span id="c">15</span>G)</button>
+                </div>
+            </div>
+
+            <div class="section-block">
+                <h3 id="shopWardrobeTitle">👑 Гардероб</h3>
+                <div class="item-row">
+                    <span id="lookDefault">Обычный вид</span>
+                    <button class="buy-btn" id="btn-none" onclick="setOutfit('none')">Надето</button>
+                </div>
+                <div class="item-row">
+                    <span id="lookHat">Шляпа сэра</span>
+                    <button class="buy-btn" id="btn-hat" onclick="setOutfit('hat')">Купить (100G)</button>
+                </div>
+            </div>
+
+            <div class="section-block">
+                <h3 id="shopLocTitle">🏡 Место обитания</h3>
+                <div class="item-row">
+                    <span id="locCarpet">Коврик (Дом)</span>
+                    <button class="buy-btn" id="loc-carpet" onclick="setLocation('carpet')">Выбрать</button>
+                </div>
+                <div class="item-row">
+                    <span id="locSofa">Элитный диван</span>
+                    <button class="buy-btn" id="loc-sofa" onclick="setLocation('sofa')">Купить (50G)</button>
+                </div>
+            </div>
+
+            <button class="back-btn" onclick="openScreen('mainScreen')">🏠 На главную</button>
+        </div>
+
+        <!-- 4. ЭКРАН ШКОЛЫ И УРОКОВ -->
+        <div id="schoolScreen" class="screen">
+            <h2 id="schMainTitle">🏫 Школа Кошарика</h2>
+            <div class="message" id="schoolMsg">Выберите класс для Кошарика:</div>
+            
+            <!-- Выбор классов с 1 по 11 -->
+            <div id="gradeSelector" class="section-block">
+                <div class="grades-grid">
+                    <button class="grade-btn" onclick="selectGrade(1)">1 Класс</button>
+                    <button class="grade-btn" onclick="selectGrade(2)">2 Класс</button>
+                    <button class="grade-btn" onclick="selectGrade(3)">3 Класс</button>
+                    <button class="grade-btn" onclick="selectGrade(4)">4 Класс</button>
+                    <button class="grade-btn" onclick="selectGrade(5)">5 Класс</button>
+                    <button class="grade-btn" onclick="selectGrade(6)">6 Класс</button>
+                    <button class="grade-btn" onclick="selectGrade(7)">7 Класс</button>
+                    <button class="grade-btn" onclick="selectGrade(8)">8 Класс</button>
+                    <button class="grade-btn" onclick="selectGrade(9)">9 Класс</button>
+                    <button class="grade-btn" onclick="selectGrade(10)">10 Класс</button>
+                    <button class="grade-btn" onclick="selectGrade(11)">11 Класс</button>
+                </div>
+            </div>
+
+            <!-- Выбор предмета -->
+            <div id="subjectSelector" class="section-block" style="display:none;">
+                <h3 id="selectedGradeTitle" style="color:#ffcc00; margin:0 0 8px 0;"></h3>
+                <p id="subChooseText" style="font-size: 12px; color: #ccc; margin-top:0;">Выберите предмет:</p>
+                <div id="subjectsList"></div>
+                <button class="back-btn" onclick="backToGrades()">Сменить класс</button>
+            </div>
+
+            <!-- Сам урок и задачи -->
+            <div id="classRoom" class="class-room" style="display:none;">
+                <h3 id="classTitle" style="color:#ffcc00; margin:0 0 8px 0;"></h3>
+                <div id="taskText" style="font-size: 16px; margin: 10px 0; font-weight: bold;"></div>
+                <input type="text" id="taskAnswer" class="task-input" placeholder="Ответ"><br>
+                <button style="background:#4CAF50; color:#fff;" onclick="checkAnswer()">Ответить</button>
+                <button style="background:#f44336; color:#fff;" onclick="backToSubjects()">К предметам</button>
+            </div>
+
+            <button class="back-btn" onclick="openScreen('mainScreen')">🚪 Выйти в меню</button>
+        </div>
+
+        <!-- 5. ЭКРАН РУЛЕТКИ -->
+        <div id="rouletteScreen" class="screen">
+            <h2 id="rouletteTitle">🎰 Колесо удачи</h2>
+            <div class="message" id="rouletteMsg">Крути один раз в день!</div>
+            
+            <div class="roulette-box">
+                <div class="roulette-wheel" id="wheel">🐱</div>
+                <button id="spinBtn" onclick="spinRoulette()">Крутить колесо!</button>
+                <div id="timerText" style="font-size: 12px; color: #ff9800; margin-top: 6px;"></div>
+            </div>
+
+            <div class="chances-box">
+                <b id="chanceTitle">📊 Шансы выпадения:</b><br>
+                • Милота Кошарика — <b>99%</b><br>
+                • Элитный секретный приз — 0.5%<br>
+                • 💡 Мудрый совет кота — 0.5%
+            </div>
+
+            <button class="back-btn" onclick="openScreen('mainScreen')">🏠 На главную</button>
+        </div>
+    </div>
+</div>
+
+<script>
+const adController = window.Adsgram ? window.Adsgram.init({ blockId: "YOUR_BLOCK_ID" }) : null;
+
+let score = parseInt(localStorage.getItem('catScore')) || 79;
+let money = parseInt(localStorage.getItem('catMoney')) || 0;
+let power = parseInt(localStorage.getItem('catPower')) || 1;
+let cost = parseInt(localStorage.getItem('catCost')) || 15;
+let health = parseInt(localStorage.getItem('catHealth')) || 100;
+let knowledge = parseInt(localStorage.getItem('catKnowledge')) || 0;
+let currentLoc = localStorage.getItem('catLoc') || 'carpet';
+let currentOutfit = localStorage.getItem('catOutfit') || 'none';
+let currentLang = 'ru'; // По умолчанию русский
+
+// Список всех стран для выбора языка
+const countries = [
+    "🇷🇺 Россия (Русский)",
+    "🇺🇸 США / USA (English)",
+    "🇬🇧 Великобритания / UK (English)",
+    "🇫🇷 Франция / France (Français)",
+    "🇩🇪 Германия / Germany (Deutsch)",
+    "🇪🇸 Испания / Spain (Español)",
+    "🇮🇹 Италия / Italy (Italiano)",
+    "🇨🇳 Китай / China (中文)",
+    "🇯🇵 Япония / Japan (日本語)",
+    "🇰🇷 Южная Корея (한국어)",
+    "🇦🇺 Австралия (English)",
+    "🇧🇷 Бразилия (Português)",
+    "🇨🇦 Канада (English / Français)",
+    "🇲🇽 Мексика (Español)",
+    "🇦🇷 Аргентина (Español)",
+    "🇮🇳 Индия (Hindi / English)",
+    "🇹🇷 Турция (Türkçe)",
+    "🇵🇱 Польша (Polski)",
+    "🇺🇦 Украина (Українська)",
+    "🇧🇾 Беларусь (Беларуская)",
+    "🇰🇿 Казахстан (Қазақша)",
+    "🇦🇲 Армения (Հայերեն)",
+    "🇬🇪 Грузия (ქართული)",
+    "🇦🇿 Азербайджан (Azərbaycan)",
+    "🇲🇩 Молдова (Română)",
+    "🇷🇴 Румыния (Română)",
+    "🇬🇷 Греция (Ελληνικά)",
+    "🇸🇪 Швеция (Svenska)",
+    "🇳🇴 Норвегия (Norsk)",
+    "🇫🇮 Финляндия (Suomi)",
+    "🇩🇰 Дания (Dansk)",
+    "🇳🇱 Нидерланды (Nederlands)",
+    "🇨🇭 Швейцария (Deutsch / Français)",
+    "🇦🇹 Австрия (Deutsch)",
+    "🇧🇪 Бельгия (Français / Nederlands)",
+    "🇵🇹 Португалия (Português)",
+    "🇮🇪 Ирландия (English / Gaeilge)",
+    "🇨🇿 Чехия (Čeština)",
+    "🇭🇺 Венгрия (Magyar)",
+    "🇸🇰 Словакия (Slovenčina)",
+    "🇧🇬 Болгария (Български)",
+    "🇷🇸 Сербия (Српски)",
+    "🇭🇷 Хорватия (Hrvatski)",
+    "🇧🇦 Босния и Герцеговина",
+    "🇸🇮 Словения (Slovenščina)",
+    "🇦🇱 Албания (Shqip)",
+    "🇪🇪 Эстония (Eesti)",
+    "🇱🇻 Латвия (Latviešu)",
+    "🇱🇹 Литва (Lietuvių)",
+    "🇮🇸 Исландия (Íslenska)",
+    "🇲🇹 Мальта (Malti)",
+    "🇨🇾 Кипр (Ελληνικά / Türkçe)",
+    "🇮🇱 Израиль (עברית)",
+    "🇸🇦 Саудовская Аравия (العربية)",
+    "🇦🇪 ОАЭ / UAE (العربية)",
+    "🇪🇬 Египет (العربية)",
+    "🇿🇦 ЮАР / South Africa",
+    "🇳🇬 Нигерия (English)",
+    "🇰🇪 Кения (Swahili / English)",
+    "🇲🇦 Марокко (العربية / Français)",
+    "🇹🇳 Тунис (العربية)",
+    "🇩🇿 Алжир (العربية)",
+    "🇻🇳 Вьетнам (Tiếng Việt)",
+    "🇹🇭 Таиланд (ไทย)",
+    "🇮🇩 Индонезия (Bahasa Indonesia)",
+    "🇲🇾 Малайзия (Bahasa Melayu)",
+    "🇸🇬 Сингапур (English / 中文)",
+    "🇵🇭 Филиппины (Filipino / English)",
+    "🇵🇰 Пакистан (Urdu / English)",
+    "🇧🇩 Бангладеш (Bengali)",
+    "🇮🇷 Иран (فارسی)",
+    "🇮🇶 Ирак (العربية)",
+    "🇸🇾 Сирия (العربية)",
+    "🇱🇧 Ливан (العربية)",
+    "🇯🇴 Иордания (العربية)",
+    "🇳🇿 Новая Зеландия (English)",
+    "🇨🇱 Чили (Español)",
+    "🇨🇴 Колумбия (Español)",
+    "🇵🇪 Перу (Español)",
+    "🇻🇪 Венесуэла (Español)"
+];
+
+let selectedCountry = "🇷🇺 Россия (Русский)";
+
+window.onload = function() {
+    renderCountries(countries);
+    checkRouletteTimer();
+};
+
+function renderCountries(list) {
+    let container = document.getElementById('countriesList');
+    container.innerHTML = '';
+    list.forEach(c => {
+        let div = document.createElement('div');
+        div.className = 'country-item';
+        div.innerText = c;
+        div.onclick = () => {
+            selectedCountry = c;
+            document.getElementById('countrySearch').value = c;
+            document.querySelectorAll('.country-item').forEach(i => i.style.background = 'transparent');
+            div.style.background = '#3f51b5';
+
+            // Автоопределение языка по выбору страны
+            if (c.includes('USA') || c.includes('UK') || c.includes('Австралия') || c.includes('Англия')) {
+                currentLang = 'en';
+            } else {
+                currentLang = 'ru';
+            }
+            applyLanguage();
+        };
+        container.appendChild(div);
+    });
+}
+
+function filterCountries() {
+    let query = document.getElementById('countrySearch').value.toLowerCase();
+    let filtered = countries.filter(c => c.toLowerCase().includes(query));
+    renderCountries(filtered);
+    if (query.includes('english') || query.includes('usa') || query.includes('uk')) {
+        currentLang = 'en';
+    } else {
+        currentLang = 'ru';
+    }
+    applyLanguage();
+}
+
+function applyLanguage() {
+    if (currentLang === 'en') {
+        document.getElementById('langTitle').innerText = "What language do you want to choose?";
+        document.getElementById('langSubtitle').innerText = "Select country / language:";
+        document.getElementById('startBtn').innerText = "🚀 Start Game";
+        document.getElementById('nHome').innerText = "Home";
+        document.getElementById('nStats').innerText = "Stats";
+        document.getElementById('nShop').innerText = "Shop";
+        document.getElementById('nSchool').innerText = "School";
+        document.getElementById('nLucky').innerText = "Lucky";
+        document.getElementById('msg').innerText = "Pet the cat or go to school!";
+        document.getElementById('btnSponsor').innerText = "💼 Sponsor Funds (+10)";
+        document.getElementById('btnAd').innerText = "📺 Watch Ad (+30)";
+        document.getElementById('statsTitle').innerText = "📊 Balance & Stats";
+        document.getElementById('stMoney').innerText = "💵 Money:";
+        document.getElementById('stFullness').innerText = "🐟 Fullness:";
+        document.getElementById('stHealth').innerText = "❤️ Health:";
+        document.getElementById('stKnowledge').innerText = "🧠 Knowledge:";
+        document.getElementById('stPower').innerText = "💪 Pet Power:";
+        document.getElementById('shopTitle').innerText = "🛒 Cat Shop";
+        document.getElementById('shopFoodTitle').innerText = "🍖 Food & Power";
+        document.getElementById('foodItemName').innerText = "Tasty Food (+1 Power)";
+        document.getElementById('shopWardrobeTitle').innerText = "👑 Wardrobe";
+        document.getElementById('lookDefault').innerText = "Default Look";
+        document.getElementById('lookHat').innerText = "Sir Hat";
+        document.getElementById('shopLocTitle').innerText = "🏡 Locations";
+        document.getElementById('locCarpet').innerText = "Carpet (Home)";
+        document.getElementById('locSofa').innerText = "Luxury Sofa";
+        document.getElementById('schMainTitle').innerText = "🏫 Cat School";
+        document.getElementById('schoolMsg').innerText = "Select a grade for Kosharik:";
+        document.getElementById('subChooseText').innerText = "Choose a subject:";
+        document.getElementById('rouletteTitle').innerText = "🎰 Lucky Wheel";
+        document.getElementById('rouletteMsg').innerText = "Spin once a day!";
+        document.getElementById('chanceTitle').innerText = "📊 Drop Chances:";
+    } else {
+        document.getElementById('langTitle').innerText = "Какой вы хотите язык?";
+        document.getElementById('langSubtitle').innerText = "Выберите страну / язык:";
+        document.getElementById('startBtn').innerText = "🚀 Начать игру / Start Game";
+        document.getElementById('nHome').innerText = "Дом";
+        document.getElementById('nStats').innerText = "Статы";
+        document.getElementById('nShop').innerText = "Магазин";
+        document.getElementById('nSchool').innerText = "Школа";
+        document.getElementById('nLucky').innerText = "Удача";
+        document.getElementById('msg').innerText = "Гладь котика или отправляйся на учебу!";
+        document.getElementById('btnSponsor').innerText = "💼 Деньги от спонсоров (+10)";
+        document.getElementById('btnAd').innerText = "📺 Смотреть рекламу (+30)";
+        document.getElementById('statsTitle').innerText = "📊 Баланс и Статистика";
+        document.getElementById('stMoney').innerText = "💵 Деньги:";
+        document.getElementById('stFullness').innerText = "🐟 Сытость:";
+        document.getElementById('stHealth').innerText = "❤️ Здоровье:";
+        document.getElementById('stKnowledge').innerText = "🧠 Знания:";
+        document.getElementById('stPower').innerText = "💪 Сила питомца:";
+        document.getElementById('shopTitle').innerText = "🛒 Кошачий магазин";
+        document.getElementById('shopFoodTitle').innerText = "🍖 Еда и Сила";
+        document.getElementById('foodItemName').innerText = "Вкусная еда (+1 Сила)";
+        document.getElementById('shopWardrobeTitle').innerText = "👑 Гардероб";
+        document.getElementById('lookDefault').innerText = "Обычный вид";
+        document.getElementById('lookHat').innerText = "Шляпа сэра";
+        document.getElementById('shopLocTitle').innerText = "🏡 Место обитания";
+        document.getElementById('locCarpet').innerText = "Коврик (Дом)";
+        document.getElementById('locSofa').innerText = "Элитный диван";
+        document.getElementById('schMainTitle').innerText = "🏫 Школа Кошарика";
+        document.getElementById('schoolMsg').innerText = "Выберите класс для Кошарика:";
+        document.getElementById('subChooseText').innerText = "Выберите предмет:";
+        document.getElementById('rouletteTitle').innerText = "🎰 Колесо удачи";
+        document.getElementById('rouletteMsg').innerText = "Крути один раз в день!";
+        document.getElementById('chanceTitle').innerText = "📊 Шансы выпадения:";
+    }
+}
+
+function enterGame() {
+    document.getElementById('langScreen').style.display = 'none';
+    document.getElementById('gameMainWrapper').style.display = 'block';
+    updateUI();
+}
+
+// Анимация похода в школу
+function triggerSchoolWalk() {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    
+    let animScreen = document.getElementById('schoolAnimationScreen');
+    animScreen.classList.add('active');
+    document.getElementById('nav-school').classList.add('active');
+
+    if (currentLang === 'en') {
+        document.getElementById('animTitle').innerText = "Walking to School...";
+        document.getElementById('animMsg').innerText = "Kosharik is leaving home and rushing to class! 🎒🔔";
+        document.getElementById('animSub').innerText = "School bell is ringing...";
+    } else {
+        document.getElementById('animTitle').innerText = "🏫 Путь в школу...";
+        document.getElementById('animMsg').innerText = "Кошарик выходит из дома и спешит на урок! 🎒🔔";
+        document.getElementById('animSub').innerText = "Звенит школьный звонок...";
+    }
+
+    // Через 2.5 секунды переходим в саму школу
+    setTimeout(() => {
+        openScreen('schoolScreen');
+    }, 2500);
+}
+
+// Переменные школы
+let currentGrade = 1;
+let currentSubject = '';
+let currentCorrectAnswer = "";
+
+function openScreen(screenId) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    
+    document.getElementById(screenId).classList.add('active');
+    
+    if(screenId === 'mainScreen') document.getElementById('nav-main').classList.add('active');
+    if(screenId === 'statsScreen') document.getElementById('nav-stats').classList.add('active');
+    if(screenId === 'shopScreen') document.getElementById('nav-shop').classList.add('active');
+    if(screenId === 'schoolScreen') {
+        document.getElementById('nav-school').classList.add('active');
+        resetSchoolView();
+    }
+    if(screenId === 'rouletteScreen') {
+        document.getElementById('nav-roulette').classList.add('active');
+        checkRouletteTimer();
+    }
+}
+
+let startX = 0, startY = 0;
+const catBox = document.getElementById('catBox');
+const msg = document.getElementById('msg');
+
+catBox.addEventListener('touchstart', (e) => {
+    startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
+});
+
+catBox.addEventListener('touchend', (e) => {
+    let endX = e.changedTouches[0].clientX;
+    let endY = e.changedTouches[0].clientY;
+    let dist = Math.hypot(endX - startX, endY - startY);
+
+    if (dist > 30) {
+        score += power;
+        money += Math.floor(power / 2) + 1;
+        save();
+        updateUI();
+        msg.innerText = currentLang === 'en' ? "Purrr... 🐾✨" : "Мурр... 🐾✨";
+        setTimeout(() => { msg.innerText = ""; }, 1000);
+    } else {
+        msg.innerText = currentLang === 'en' ? "HISS! Don't hit! 😾" : "ШИП! Не бей! 😾";
+        setTimeout(() => { msg.innerText = ""; }, 1000);
+    }
+});
+
+catBox.addEventListener('click', () => {
+    msg.innerText = currentLang === 'en' ? "HISS! 😾" : "ШИП! 😾";
+    setTimeout(() => { msg.innerText = ""; }, 1000);
+});
+
+function getMoney() {
+    money += 10;
+    save();
+    updateUI();
+    msg.innerText = currentLang === 'en' ? "+10 from sponsors! 💵" : "+10 от спонсоров! 💵";
+    setTimeout(() => { msg.innerText = ""; }, 1000);
+}
+
+function watchAd() {
+    if (adController) {
+        adController.show()
+            .then((result) => {
+                money += 30;
+                save();
+                updateUI();
+                msg.innerText = currentLang === 'en' ? "+30 coins for ad! 🎉" : "+30 монет за рекламу! 🎉";
+                setTimeout(() => { msg.innerText = ""; }, 1200);
+            })
+            .catch((err) => {
+                msg.innerText = currentLang === 'en' ? "Ad was not completed ✖️" : "Реклама не завершена ✖️";
+                setTimeout(() => { msg.innerText = ""; }, 1200);
+            });
+    } else {
+        money += 30;
+        save();
+        updateUI();
+        msg.innerText = currentLang === 'en' ? "+30 coins! 💵" : "+30 монет! 💵";
+        setTimeout(() => { msg.innerText = ""; }, 1200);
+    }
+}
+
+// Логика школы по классам и предметам
+function resetSchoolView() {
+    document.getElementById('gradeSelector').style.display = 'block';
+    document.getElementById('subjectSelector').style.display = 'none';
+    document.getElementById('classRoom').style.display = 'none';
+    document.getElementById('schoolMsg').innerText = currentLang === 'en' ? "Select a grade for Kosharik:" : "Выберите класс для Кошарика:";
+}
+
+function selectGrade(grade) {
+    currentGrade = grade;
+    document.getElementById('gradeSelector').style.display = 'none';
+    document.getElementById('subjectSelector').style.display = 'block';
+    document.getElementById('selectedGradeTitle').innerText = currentLang === 'en' ? `Grade ${grade}` : `${grade} Класс`;
+    
+    let list = document.getElementById('subjectsList');
+    list.innerHTML = '';
+
+    let subs = [
+        { id: 'math', name: currentLang === 'en' ? '📐 Mathematics' : '📐 Математика' },
+        { id: 'russian', name: currentLang === 'en' ? '📖 Russian Language' : '📖 Русский язык' }
+    ];
+
+    if (grade >= 5) subs.push({ id: 'bio', name: currentLang === 'en' ? '🌿 Biology' : '🌿 Биология' });
+    if (grade >= 2) subs.push({ id: 'eng', name: currentLang === 'en' ? '🇬🇧 English Language' : '🇬🇧 Английский язык' });
+    if (grade >= 7) subs.push({ id: 'physics', name: currentLang === 'en' ? '⚡ Physics' : '⚡ Физика' });
+    if (grade >= 8) subs.push({ id: 'chem', name: currentLang === 'en' ? '🧪 Chemistry' : '🧪 Химия' });
+
+    subs.forEach(s => {
+        let btn = document.createElement('button');
+        btn.className = 'subject-btn';
+        btn.innerText = s.name;
+        btn.onclick = () => startLesson(s.id, s.name);
+        list.appendChild(btn);
+    });
+
+    document.getElementById('schoolMsg').innerText = currentLang === 'en' ? `Grade ${grade} selected. Choose subject:` : `Выбран ${grade} класс. Выберите предмет:`;
+}
+
+function backToGrades() {
+    resetSchoolView();
+}
+
+function backToSubjects() {
+    document.getElementById('classRoom').style.display = 'none';
+    document.getElementById('subjectSelector').style.display = 'block';
+}
+
+function startLesson(subId, subName) {
+    currentSubject = subId;
+    document.getElementById('subjectSelector').style.display = 'none';
+    document.getElementById('classRoom').style.display = 'block';
+    document.getElementById('classTitle').innerText = `${subName} (${currentLang === 'en' ? 'Grade' : 'Класс'} ${currentGrade})`;
+    generateTask();
+}
+
+function generateTask() {
+    document.getElementById('taskAnswer').value = '';
+    let taskStr = "";
+
+    if (currentSubject === 'math') {
+        if (currentGrade <= 3) {
+            let a = Math.floor(Math.random() * 20) + 2;
+            let b = Math.floor(Math.random() * 20) + 2;
+            let op = Math.random() < 0.5 ? '+' : '-';
+            if (op === '+') { currentCorrectAnswer = a + b; taskStr = `${a} + ${b} = ?`; }
+            else { 
+                if(a < b) [a, b] = [b, a];
+                currentCorrectAnswer = a - b; taskStr = `${a} - ${b} = ?`; 
+            }
+        } else if (currentGrade <= 6) {
+            let a = Math.floor(Math.random() * 9) + 2;
+            let b = Math.floor(Math.random() * 9) + 2;
+            currentCorrectAnswer = a * b;
+            taskStr = `${a} × ${b} = ?`;
+        } else {
+            let a = Math.floor(Math.random() * 12) + 3;
+            currentCorrectAnswer = a * a;
+            taskStr = `${a}² = ?`;
+        }
+    } 
+    else if (currentSubject === 'russian') {
+        const questions = [
+            { q: "Вставь букву: к_рова (о/а)", a: "о" },
+            { q: "Вставь букву: м_локо (о/а)", a: "о" },
+            { q: "Сколько гласных в слове 'кот'?", a: "1" },
+            { q: "Найди корень в слове: 'рыбка' (напиши корень)", a: "рыб" },
+            { q: "Подбери проверочное к слову 'трава' (ед.ч)", a: "травы" }
+        ];
+        let item = questions[Math.floor(Math.random() * questions.length)];
+        taskStr = item.q;
+        currentCorrectAnswer = item.a;
+    }
+    else if (currentSubject === 'eng') {
+        const questions = [
+            { q: "Как переводится 'Cat'?", a: "кот" },
+            { q: "Как переводится 'Dog'?", a: "собака" },
+            { q: "Как переводится 'School'?", a: "школа" },
+            { q: "Напиши цифру 'One' цифрой", a: "1" },
+            { q: "Напиши цифру 'Five' цифрой", a: "5" }
+        ];
+        let item = questions[Math.floor(Math.random() * questions.length)];
+        taskStr = item.q;
+        currentCorrectAnswer = item.a;
+    }
+    else if (currentSubject === 'bio') {
+        const questions = [
+            { q: "Какой орган перекачивает кровь у котиков?", a: "сердце" },
+            { q: "Что едят травоядные животные?", a: "трава" },
+            { q: "Сколько ног у паука?", a: "8" },
+            { q: "Главный орган мышления человека и кота", a: "мозг" }
+        ];
+        let item = questions[Math.floor(Math.random() * questions.length)];
+        taskStr = item.q;
+        currentCorrectAnswer = item.a;
+    }
+    else if (currentSubject === 'physics') {
+        taskStr = "Чему равна скорость света в км/с? (напиши число 300000)";
+        currentCorrectAnswer = "300000";
+    }
+    else if (currentSubject === 'chem') {
+        taskStr = "Какая формула у воды? (напиши h2o)";
+        currentCorrectAnswer = "h2o";
+    }
+
+    document.getElementById('taskText').innerText = taskStr;
+}
+
+function checkAnswer() {
+    let userAns = document.getElementById('taskAnswer').value.trim().toLowerCase();
+    let sMsg = document.getElementById('schoolMsg');
+
+    if (userAns === String(currentCorrectAnswer).toLowerCase()) {
+        let earnedKb = currentGrade * 2;
+        let earnedMoney = currentGrade * 3;
+        knowledge += earnedKb;
+        money += earnedMoney;
+        
+        // Случайная хорошая оценка (5 или 4)
+        let mark = Math.random() < 0.6 ? 5 : 4;
+        
+        sMsg.innerHTML = `🎉 Верно! Оценка: <span class="grade-badge mark-${mark}">${mark}</span> <br><span style="color:#2196F3;">+${earnedKb} Знаний</span> & <span style="color:#ffcc00;">+${earnedMoney} Монет</span>!`;
+        save();
+        updateUI();
+        setTimeout(generateTask, 1500);
+    } else {
+        // Ошибка — может прилететь тройка или двойка!
+        let badMark = Math.random() < 0.5 ? 3 : 2;
+        sMsg.innerHTML = `❌ Неверно! Учитель поставил оценку: <span class="grade-badge mark-${badMark}">${badMark}</span>. Попробуй еще раз!`;
+    }
+}
+
+function checkRouletteTimer() {
+    let lastSpin = parseInt(localStorage.getItem('catLastSpin')) || 0;
+    let now = Date.now();
+    let dayMs = 24 * 60 * 60 * 1000;
+
+    let spinBtn = document.getElementById('spinBtn');
+    let timerText = document.getElementById('timerText');
+
+    if (now - lastSpin < dayMs) {
+        let timeLeft = dayMs - (now - lastSpin);
+        let hoursLeft = Math.floor(timeLeft / (1000 * 60 * 60));
+        let minsLeft = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+        
+        spinBtn.disabled = true;
+        spinBtn.style.background = "#555";
+        timerText.innerText = currentLang === 'en' ? `⏳ Next spin in: ${hoursLeft}h ${minsLeft}m` : `⏳ Следующая прокрутка через: ${hoursLeft}ч ${minsLeft}м`;
+    } else {
+        spinBtn.disabled = false;
+        spinBtn.style.background = "#ffcc00";
+        timerText.innerText = currentLang === 'en' ? "✨ Free spin available!" : "✨ Доступна бесплатная прокрутка!";
+    }
+}
+
+function spinRoulette() {
+    let wheel = document.getElementById('wheel');
+    let rMsg = document.getElementById('rouletteMsg');
+    let spinBtn = document.getElementById('spinBtn');
+
+    spinBtn.disabled = true;
+    wheel.classList.add('spin-anim');
+    rMsg.innerText = currentLang === 'en' ? "Spinning wheel... 🐾" : "Колесо крутится... 🐾";
+
+    setTimeout(() => {
+        wheel.classList.remove('spin-anim');
+        let chance = Math.random() * 100;
+
+        if (chance < 0.5) {
+            const tips = currentLang === 'en' ? [
+                "💡 Wise Cat Tip: Whoever studies with Kosharik passes all exams with A+!",
+                "💡 Wise Cat Tip: Petting breaks increase productivity by 99%."
+            ] : [
+                "💡 Мудрый совет: Тот, кто учится с Кошариком, сдает все экзамены на отлично!",
+                "💡 Мудрый совет: Перерывы на поглаживания повышают продуктивность на 99%."
+            ];
+            rMsg.innerText = tips[Math.floor(Math.random() * tips.length)];
+        } 
+        else if (chance < 1.0) {
+            money += 300;
+            rMsg.innerText = currentLang === 'en' ? "🌟 JACKPOT! Kosharik found treasure and brought +300 coins! 💰🎉" : "🌟 ДЖЕКПОТ! Кошарик нашел клад и принес +300 монет! 💰🎉";
+        }
+        else {
+            const cuteness = currentLang === 'en' ? [
+                "🐾 Kosharik stretched out and became even cuter! Mood is top-tier! 🥰",
+                "💖 Kosharik made such a sweet face! 99.9% Cuteness ✨",
+                "🌸 Kosharik rolled onto his back. Too adorable for words! 😻",
+                "🍯 Our Kosharik is sweeter than honey today! Absolute cuteness unlocked! 🐾"
+            ] : [
+                "🐾 Кошарик потянулся и стал еще милее! Настроение на высоте! 🥰",
+                "💖 Кошарик сделал такую сладкую мордашку! 99.9% Милоты ✨",
+                "🌸 Кошарик перевернулся на спинку. Слишком умилительно! 😻",
+                "🍯 Наш Кошарик сегодня слаще меда! Уровень милоты зашкаливает! 🐾"
+            ];
+            rMsg.innerText = cuteness[Math.floor(Math.random() * cuteness.length)];
+        }
+
+        localStorage.setItem('catLastSpin', Date.now());
+        save();
+        updateUI();
+        checkRouletteTimer();
+
+    }, 1200);
+}
+
+function buyFood() {
+    if (money >= cost) {
+        money -= cost;
+        power += 1;
+        cost = Math.round(cost * 1.5);
+        save();
+        updateUI();
+        msg.innerText = currentLang === 'en' ? "Yummy! Food purchased 🐟" : "Ням-ням! Еда куплена 🐟";
+        setTimeout(() => { msg.innerText = ""; }, 1000);
+    } else {
+        msg.innerText = currentLang === 'en' ? "Not enough money! ✖️" : "Недостаточно монет! ✖️";
+        setTimeout(() => { msg.innerText = ""; }, 1000);
+    }
+}
+
+function setOutfit(outfit) {
+    if (outfit === 'hat') {
+        let hatCost = 100;
+        if (money >= hatCost || localStorage.getItem('hatUnlocked') === 'true') {
+            if (localStorage.getItem('hatUnlocked') !== 'true') {
+                money -= hatCost;
+                localStorage.setItem('hatUnlocked', 'true');
+            }
+            currentOutfit = 'hat';
+            msg.innerText = currentLang === 'en' ? "Hat equipped! 🎩" : "Шляпа надета! 🎩";
+        } else {
+            msg.innerText = currentLang === 'en' ? "Hat costs 100 coins! 🎩" : "Шляпа стоит 100 монет! 🎩";
+            setTimeout(() => { msg.innerText = ""; }, 1000);
+            return;
+        }
+    } else {
+        currentOutfit = 'none';
+        msg.innerText = currentLang === 'en' ? "Default look 🐱" : "Обычный вид 🐱";
+    }
+    save();
+    updateUI();
+    setTimeout(() => { msg.innerText = ""; }, 1000);
+}
+
+function setLocation(loc) {
+    if (loc === 'sofa') {
+        let sofaCost = 50;
+        if (money >= sofaCost || localStorage.getItem('sofaUnlocked') === 'true') {
+            if (localStorage.getItem('sofaUnlocked') !== 'true') {
+                money -= sofaCost;
+                localStorage.setItem('sofaUnlocked', 'true');
+            }
+            currentLoc = 'sofa';
+        } else {
+            msg.innerText = currentLang === 'en' ? "Sofa costs 50 coins! 🛋️️" : "Диван стоит 50 монет! 🛋️";
+            setTimeout(() => { msg.innerText = ""; }, 1000);
+            return;
+        }
+    } else {
+        currentLoc = 'carpet';
+    }
+    save();
+    updateUI();
+    msg.innerText = currentLang === 'en' ? "Location updated! 🏡" : "Место обновлено! 🏡";
+    setTimeout(() => { msg.innerText = ""; }, 1000);
+}
+
+function save() {
+    localStorage.setItem('catScore', score);
+    localStorage.setItem('catMoney', money);
+    localStorage.setItem('catPower', power);
+    localStorage.setItem('catCost', cost);
+    localStorage.setItem('catHealth', health);
+    localStorage.setItem('catKnowledge', knowledge);
+    localStorage.setItem('catLoc', currentLoc);
+    localStorage.setItem('catOutfit', currentOutfit);
+}
+
+function updateUI() {
+    document.getElementById('s').innerText = score;
+    document.getElementById('m').innerText = money;
+    document.getElementById('p').innerText = power;
+    document.getElementById('c').innerText = cost;
+    document.getElementById('hp').innerText = health;
+    document.getElementById('kb').innerText = knowledge;
+
+    if (currentLoc === 'sofa') {
+        document.getElementById('bodyBg').style.background = '#362214';
+        document.getElementById('loc-sofa').innerText = currentLang === 'en' ? 'Selected' : 'Выбрано';
+        document.getElementById('loc-sofa').classList.add('active');
+        document.getElementById('loc-carpet').innerText = currentLang === 'en' ? 'Select' : 'Выбрать';
+        document.getElementById('loc-carpet').classList.remove('active');
+    } else {
+        document.getElementById('bodyBg').style.background = '#1a1a1a';
+        document.getElementById('loc-carpet').innerText = currentLang === 'en' ? 'Selected' : 'Выбрано';
+        document.getElementById('loc-carpet').classList.add('active');
+        document.getElementById('loc-sofa').innerText = localStorage.getItem('sofaUnlocked') === 'true' ? (currentLang === 'en' ? 'Select' : 'Выбрать') : (currentLang === 'en' ? 'Buy (50G)' : 'Купить (50G)');
+        document.getElementById('loc-sofa').classList.remove('active');
+    }
+
+    if (currentOutfit === 'hat') {
+        document.getElementById('btn-hat').innerText = currentLang === 'en' ? 'Equipped' : 'Надето';
+        document.getElementById('btn-hat').classList.add('active');
+        document.getElementById('btn-none').innerText = currentLang === 'en' ? 'Equip' : 'Надеть';
+        document.getElementById('btn-none').classList.remove('active');
+    } else {
+        document.getElementById('btn-none').innerText = currentLang === 'en' ? 'Equipped' : 'Надето';
+        document.getElementById('btn-none').classList.add('active');
+        document.getElementById('btn-hat').innerText = localStorage.getItem('hatUnlocked') === 'true' ? (currentLang === 'en' ? 'Equip' : 'Надеть') : (currentLang === 'en' ? 'Buy (100G)' : 'Купить (100G)');
+        document.getElementById('btn-hat').classList.remove('active');
+    }
+}
+</script>
+</body>
+</html>
