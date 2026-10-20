@@ -1,847 +1,554 @@
+```html
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Кошарик: Школьная жизнь и Симулятор</title>
-<script src="https://sad.adsgram.ai/js/sad.js"></script>
-<style>
-body {
-    background: #1a1a1a;
-    color: #fff;
-    text-align: center;
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 10px;
-    user-select: none;
-    -webkit-user-select: none;
-}
-.game-container {
-    max-width: 400px;
-    margin: 0 auto;
-    background: #2a2a2a;
-    padding: 15px;
-    border-radius: 15px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-}
-.message {
-    font-size: 14px;
-    font-weight: bold;
-    color: #ffcc00;
-    min-height: 28px;
-    margin: 8px 0;
-}
-button {
-    background: #ffcc00;
-    border: none;
-    padding: 10px 15px;
-    font-size: 13px;
-    font-weight: bold;
-    border-radius: 8px;
-    margin: 4px;
-    cursor: pointer;
-}
-button:active { transform: scale(0.95); }
-.ad-btn { background: #ff9800; color: #fff; }
-.back-btn { background: #607d8b; color: #fff; width: 100%; margin-top: 10px; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Очень Странные Дела — Пропуск в Изнанку</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <style>
+        @font-face {
+            font-family: 'StrangerFont';
+            src: local('ITC Benguiat'), local('Benguiat'), url('https://fonts.cdnfonts.com/s/22424/ITC Benguiat Bold.woff') format('woff');
+            font-weight: bold;
+        }
 
-/* Стартовый экран */
-#langScreen { display: block; }
-.search-input {
-    width: 90%;
-    padding: 10px;
-    font-size: 14px;
-    border-radius: 8px;
-    border: 2px solid #ffcc00;
-    background: #111;
-    color: #fff;
-    margin: 10px 0;
-    text-align: center;
-}
-.countries-list {
-    max-height: 180px;
-    overflow-y: auto;
-    background: #222;
-    border-radius: 8px;
-    padding: 5px;
-    margin-top: 10px;
-    text-align: left;
-}
-.country-item {
-    padding: 8px 10px;
-    font-size: 13px;
-    border-bottom: 1px solid #333;
-    cursor: pointer;
-    border-radius: 5px;
-}
-.country-item:hover { background: #333; color: #ffcc00; }
+        body {
+            background-color: #030107;
+            color: #e2e8f0;
+            font-family: 'Montserrat', sans-serif;
+            overflow-x: hidden;
+            touch-action: manipulation;
+            user-select: none;
+        }
 
-/* Навигация с прокруткой */
-.nav-bar {
-    display: flex;
-    background: #222;
-    padding: 6px;
-    border-radius: 10px;
-    margin-bottom: 15px;
-    overflow-x: auto;
-    gap: 4px;
-    white-space: nowrap;
-    -webkit-overflow-scrolling: touch;
-}
-.nav-bar::-webkit-scrollbar { display: none; }
-.nav-btn {
-    background: #333;
-    color: #ccc;
-    font-size: 11px;
-    padding: 6px 8px;
-    flex: 0 0 auto;
-    margin: 0;
-    border-radius: 6px;
-}
-.nav-btn.active { background: #ffcc00; color: #000; }
+        .stranger-title {
+            font-family: 'StrangerFont', 'Times New Roman', serif;
+            text-transform: uppercase;
+            color: transparent;
+            -webkit-text-stroke: 1.5px #e50914;
+            text-shadow: 
+                0 0 10px rgba(229, 9, 20, 0.8),
+                0 0 20px rgba(229, 9, 20, 0.5),
+                0 0 30px rgba(229, 9, 20, 0.3);
+            letter-spacing: 2px;
+        }
 
-.screen { display: none; }
-.screen.active { display: block; }
+        .stranger-box {
+            background: rgba(10, 3, 18, 0.94);
+            border: 2px solid #e50914;
+            box-shadow: 0 0 25px rgba(229, 9, 20, 0.4), inset 0 0 20px rgba(229, 9, 20, 0.25);
+            backdrop-filter: blur(12px);
+        }
 
-/* Кот */
-.cat-box {
-    position: relative;
-    width: 170px;
-    height: 170px;
-    margin: 15px auto;
-    border-radius: 50%;
-    overflow: hidden;
-    border: 4px solid #ffcc00;
-    cursor: pointer;
-    touch-action: none;
-    transition: transform 0.1s;
-}
-.cat-box img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    pointer-events: none;
-}
+        .btn-stranger {
+            background: linear-gradient(180deg, rgba(60, 0, 18, 0.95) 0%, rgba(15, 0, 5, 0.98) 100%);
+            border: 1px solid #ff1e27;
+            color: #f1f5f9;
+            transition: all 0.25s ease;
+            box-shadow: 0 0 12px rgba(229, 9, 20, 0.35);
+        }
 
-/* Статы */
-.stats-box {
-    background: #333;
-    padding: 12px;
-    border-radius: 10px;
-    text-align: left;
-    font-size: 14px;
-}
-.stat-row {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 8px;
-    border-bottom: 1px solid #444;
-    padding-bottom: 5px;
-}
+        .btn-stranger:hover, .btn-stranger:active {
+            background: #e50914;
+            color: #fff;
+            box-shadow: 0 0 30px rgba(229, 9, 20, 0.9);
+            transform: scale(1.03);
+        }
 
-.section-block {
-    background: #333;
-    padding: 12px;
-    border-radius: 10px;
-    margin-top: 10px;
-    text-align: left;
-}
-.section-block h3 { margin: 0 0 8px 0; font-size: 14px; text-align: center; color: #ffcc00; }
-.item-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 6px;
-    font-size: 12px;
-}
-.buy-btn { background: #4CAF50; color: #fff; padding: 5px 8px; font-size: 11px; }
+        /* Creeping corner tentacles */
+        .tentacle-border {
+            position: fixed;
+            pointer-events: none;
+            z-index: 30;
+            animation: float-tentacle 6s ease-in-out infinite alternate;
+        }
 
-/* Школа */
-.grades-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 5px;
-    margin-bottom: 8px;
-}
-.grade-btn {
-    background: #3f51b5;
-    color: #fff;
-    font-size: 11px;
-    padding: 7px;
-    margin: 0;
-}
-.subject-btn {
-    background: #009688;
-    color: #fff;
-    width: 100%;
-    margin: 3px 0;
-    text-align: left;
-    padding: 8px 10px;
-    font-size: 12px;
-}
-.class-room {
-    background: #222;
-    padding: 10px;
-    border-radius: 8px;
-    margin-top: 8px;
-}
-.task-input {
-    padding: 6px;
-    font-size: 14px;
-    width: 130px;
-    text-align: center;
-    border-radius: 6px;
-    border: 2px solid #ffcc00;
-    background: #111;
-    color: #fff;
-    margin: 6px 0;
-}
+        @keyframes float-tentacle {
+            0% { transform: scale(1) translate(0, 0); }
+            100% { transform: scale(1.06) translate(5px, 7px); }
+        }
 
-/* Дневник и Доска почёта */
-.diary-list, .honor-board {
-    max-height: 200px;
-    overflow-y: auto;
-    background: #222;
-    border-radius: 8px;
-    padding: 6px;
-    text-align: left;
-}
-.diary-item {
-    background: #333;
-    padding: 6px 8px;
-    border-radius: 6px;
-    margin-bottom: 5px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 11px;
-}
-.grade-badge {
-    display: inline-block;
-    padding: 2px 6px;
-    border-radius: 5px;
-    font-weight: bold;
-    font-size: 13px;
-}
-.mark-5 { background: #4CAF50; color: #fff; }
-.mark-4 { background: #8BC34A; color: #000; }
-.mark-3 { background: #FF9800; color: #fff; }
-.mark-2 { background: #f44336; color: #fff; }
+        /* Fullscreen Tentacle Capture Overlay */
+        .full-tentacles-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 50;
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+            background: rgba(2, 0, 5, 0.96);
+        }
 
-.calendar-box, .utility-box, .series-box, .pharmacy-box {
-    background: #222;
-    padding: 10px;
-    border-radius: 8px;
-    font-size: 13px;
-    text-align: left;
-    margin-top: 8px;
-}
-</style>
+        .full-tentacles-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        @keyframes tentacle-pull {
+            0% { transform: scale(0.2) rotate(-15deg); opacity: 0; }
+            60% { transform: scale(1.15) rotate(5deg); opacity: 1; }
+            100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+
+        .animate-tentacle-grab {
+            animation: tentacle-pull 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.27) forwards;
+        }
+
+        @keyframes pulse-red {
+            0%, 100% { opacity: 0.35; }
+            50% { opacity: 0.75; }
+        }
+
+        .upside-down-glow {
+            animation: pulse-red 3.5s infinite ease-in-out;
+        }
+
+        @keyframes glitch-text {
+            0% { text-shadow: 2px 0 #ff0000, -2px 0 #00ffff; }
+            50% { text-shadow: -2px 0 #ff0000, 2px 0 #00ffff; }
+            100% { text-shadow: 2px 0 #ff0000, -2px 0 #00ffff; }
+        }
+
+        .odi-dead-line {
+            color: #ff2a2a;
+            font-weight: 900;
+            letter-spacing: 2px;
+            animation: glitch-text 0.3s infinite;
+        }
+
+        #sporesCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        .terminal-font {
+            font-family: 'Share Tech Mono', monospace;
+        }
+    </style>
 </head>
-<body id="bodyBg">
+<body class="min-h-screen flex flex-col items-center justify-between p-4 relative overflow-hidden">
 
-<div class="game-container">
-    <h1 id="mainTitle">🐾 Кошарик</h1>
+    <!-- Spores background canvas -->
+    <canvas id="sporesCanvas"></canvas>
 
-    <!-- 0. СТАРТОВЫЙ ВЫБОР ЯЗЫКА -->
-    <div id="langScreen" class="screen active">
-        <div class="message" id="langTitleText">Какой вы хотите язык?</div>
-        <div style="font-size: 22px; margin: 4px 0;">🍂 🌍</div>
-        <div class="section-block">
-            <h3 id="langSubtitleText" style="margin-bottom:4px;">Выберите страну / язык</h3>
-            <input type="text" id="countrySearch" class="search-input" placeholder="🔍 Поиск страны..." oninput="filterCountries()">
-            <div class="countries-list" id="countriesList"></div>
+    <!-- Red glowing ambient backdrop -->
+    <div class="fixed inset-0 pointer-events-none upside-down-glow z-0" style="background: radial-gradient(circle, rgba(229,9,20,0.25) 0%, rgba(3,1,7,0.95) 80%);"></div>
+
+    <!-- Creepy corner tentacles -->
+    <svg class="tentacle-border top-0 left-0 w-40 md:w-64 h-40 md:h-64 text-red-900 opacity-80" viewBox="0 0 100 100">
+        <path d="M0,0 Q40,15 20,50 T50,75 T10,100 C0,80 0,40 0,0 Z" fill="currentColor" />
+        <path d="M0,0 Q60,10 35,40 T75,65 T0,85 Z" fill="#3a0004" opacity="0.8" />
+    </svg>
+    <svg class="tentacle-border top-0 right-0 w-40 md:w-64 h-40 md:h-64 text-red-900 opacity-80" viewBox="0 0 100 100" style="transform: scaleX(-1);">
+        <path d="M0,0 Q40,15 20,50 T50,75 T10,100 C0,80 0,40 0,0 Z" fill="currentColor" />
+        <path d="M0,0 Q60,10 35,40 T75,65 T0,85 Z" fill="#3a0004" opacity="0.8" />
+    </svg>
+    <svg class="tentacle-border bottom-0 left-0 w-40 md:w-64 h-40 md:h-64 text-red-900 opacity-80" viewBox="0 0 100 100" style="transform: scaleY(-1);">
+        <path d="M0,0 Q40,15 20,50 T50,75 T10,100 C0,80 0,40 0,0 Z" fill="currentColor" />
+    </svg>
+    <svg class="tentacle-border bottom-0 right-0 w-40 md:w-64 h-40 md:h-64 text-red-900 opacity-80" viewBox="0 0 100 100" style="transform: scale(-1, -1);">
+        <path d="M0,0 Q40,15 20,50 T50,75 T10,100 C0,80 0,40 0,0 Z" fill="currentColor" />
+    </svg>
+
+    <!-- Fullscreen Tentacle Capture Overlay -->
+    <div id="tentaclesGrabOverlay" class="full-tentacles-overlay">
+        <div class="relative w-full h-full flex flex-col items-center justify-center p-4">
+            
+            <!-- Animated SVG Tentacles grabbing screen -->
+            <svg class="absolute inset-0 w-full h-full text-red-950 opacity-95 animate-tentacle-grab pointer-events-none" viewBox="0 0 200 200" preserveAspectRatio="none">
+                <path d="M0,0 Q100,50 40,100 T180,180 Q100,200 0,200 Z" fill="currentColor" />
+                <path d="M200,0 Q100,60 160,110 T20,200 Q100,180 200,200 Z" fill="#500005" />
+                <path d="M0,100 Q100,150 200,100 T100,0 Z" fill="#200002" opacity="0.85" />
+            </svg>
+
+            <!-- Regular Wrong Answer Overlay Content -->
+            <div id="genericFailContent" class="z-10 text-center stranger-box p-6 md:p-8 rounded-2xl max-w-md w-full hidden border-2 border-red-700">
+                <h2 class="text-2xl md:text-3xl font-black text-red-600 mb-2">НЕ ПРАВИЛЬНО!</h2>
+                <p class="text-gray-400 italic text-sm mb-6">к сожалению...</p>
+                <button onclick="closeTentacleOverlay(); resetQuest();" class="btn-stranger py-3 px-8 rounded-xl font-bold uppercase tracking-wider">
+                    Попробовать снова
+                </button>
+            </div>
+
+            <!-- Special "ОДИ" Trap Content -->
+            <div id="odiTrapContent" class="z-10 text-center stranger-box p-6 md:p-8 rounded-2xl max-w-lg w-full hidden border-2 border-red-600 shadow-[0_0_40px_rgba(229,9,20,0.8)]">
+                <h3 class="text-2xl md:text-3xl font-black text-red-600 tracking-wider mb-1">НЕ ПРАВИЛЬНО!</h3>
+                <p class="text-gray-400 text-sm mb-4 italic">к сожалению...</p>
+
+                <!-- "ОДИ БОЛЬШЕ НЕТ" repeated exactly 10 times -->
+                <div id="odiRepeatedBlock" class="my-4 py-3 bg-black/80 rounded-xl border border-red-900/90 max-h-56 overflow-y-auto space-y-1.5 shadow-inner">
+                    <!-- Populated via JS -->
+                </div>
+
+                <p class="text-lg md:text-xl font-bold text-yellow-400 mt-4 mb-6 tracking-wide">Правильный ответ никто...</p>
+
+                <button onclick="proceedToSacrificeScene()" class="btn-stranger py-3 px-10 rounded-xl text-lg font-black tracking-widest uppercase bg-red-700 hover:bg-red-600 shadow-[0_0_25px_rgba(229,9,20,0.9)]">
+                    Далее
+                </button>
+            </div>
         </div>
-        <button id="startBtn" style="background:#4CAF50; color:#fff; width:100%; margin-top:10px;" onclick="enterGame()">🚀 Начать игру</button>
     </div>
 
-    <!-- ИГРОВОЙ ИНТЕРФЕЙС -->
-    <div id="gameMainWrapper" style="display:none;">
-        <div class="nav-bar">
-            <button class="nav-btn active" id="nav-main" onclick="openScreen('mainScreen')">🏠 Дом</button>
-            <button class="nav-btn" id="nav-stats" onclick="openScreen('statsScreen')">📊 Статы</button>
-            <button class="nav-btn" id="nav-shop" onclick="openScreen('shopScreen')">🛒 Магазин</button>
-            <button class="nav-btn" id="nav-pharmacy" onclick="openScreen('pharmacyScreen')">💊 Аптека</button>
-            <button class="nav-btn" id="nav-school" onclick="openScreen('schoolScreen')">🏫 Школа</button>
-            <button class="nav-btn" id="nav-diary" onclick="openScreen('diaryScreen')">📖 Дневник</button>
-            <button class="nav-btn" id="nav-series" onclick="openScreen('seriesScreen')">📺 Сериалы</button>
-            <button class="nav-btn" id="nav-calendar" onclick="openScreen('calendarScreen')">📅 Календарь</button>
-            <button class="nav-btn" id="nav-utility" onclick="openScreen('utilityScreen')">💡 ЖКУ</button>
-        </div>
+    <!-- Audio Toggle Button -->
+    <button id="audioBtn" class="fixed top-4 right-4 z-40 p-3 bg-red-950/80 border border-red-600 rounded-full text-red-200 hover:text-white transition shadow-lg flex items-center justify-center">
+        <svg id="musicOnIcon" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path></svg>
+        <svg id="musicOffIcon" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2"></path></svg>
+    </button>
 
-        <!-- 1. ДОМ -->
-        <div id="mainScreen" class="screen active">
-            <div class="message" id="msg">Гладь котика, следи за уроками и настроением!</div>
-            <div class="cat-box" id="catBox">
-                <img id="catImg" src="1000020704.jpg" alt="Кошарик" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'200\' height=\'200\'><text x=\'50%\' y=\'50%\' dominant-baseline=\'middle\' text-anchor=\'middle\' font-size=\'60\'>🐱</text></svg>'">
+    <!-- TOP HEADER -->
+    <header class="z-20 text-center my-4 max-w-2xl px-2">
+        <h1 class="text-base md:text-2xl font-bold tracking-wide text-red-500 uppercase drop-shadow-[0_0_12px_rgba(229,9,20,0.9)] border-b-2 border-red-800 pb-2">
+            Пройди несколько уровней вопросов, чтобы тебя впустили.
+        </h1>
+    </header>
+
+    <!-- MAIN QUESTION CONTAINER -->
+    <main class="z-20 w-full max-w-xl my-auto px-2">
+
+        <!-- ==================== LEVEL 1 ==================== -->
+        <div id="level1" class="stranger-box rounded-2xl p-6 md:p-8 text-center transition-all duration-500">
+            <div class="text-xs font-bold text-red-400 tracking-widest uppercase mb-2">Уровень 1</div>
+            <h2 class="text-xl md:text-2xl font-bold text-white mb-6 leading-relaxed">
+                В какую игру играли Дастин, Лукас и Уилл?
+            </h2>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <button onclick="handleL1Answer(true)" class="btn-stranger py-3.5 px-4 rounded-xl text-lg font-bold">D&D</button>
+                <button onclick="handleL1Answer(false)" class="btn-stranger py-3.5 px-4 rounded-xl text-lg font-bold">Монополия</button>
+                <button onclick="handleL1Answer(false)" class="btn-stranger py-3.5 px-4 rounded-xl text-lg font-bold">Шашки</button>
             </div>
-            <button onclick="getMoney()">💼 Спонсоры (+10)</button>
-            <button class="ad-btn" onclick="watchAd()">📺 Реклама (+30)</button>
-            <button style="background:#009688; color:#fff; width:100%; margin-top:6px;" onclick="playChess()">♟️ Сыграть в шахматы дома</button>
         </div>
 
-        <!-- 2. СТАТЫ -->
-        <div id="statsScreen" class="screen">
-            <h2>📊 Состояние Кошарика</h2>
-            <div class="stats-box">
-                <div class="stat-row"><span>💵 Деньги:</span><b id="m" style="color:#ffcc00;">0</b></div>
-                <div class="stat-row"><span>🐟 Сытость:</span><b id="s" style="color:#4CAF50;">79</b></div>
-                <div class="stat-row"><span>💧 Жажда:</span><b id="thirst" style="color:#00bcd4;">100</b></div>
-                <div class="stat-row"><span>🌡 Тепло:</span><b id="warmth" style="color:#ff9800;">100</b></div>
-                <div class="stat-row"><span>❤️ Здоровье:</span><b id="hp" style="color:#ff5252;">100</b></div>
-                <div class="stat-row"><span>🧠 Знания:</span><b id="kb" style="color:#2196F3;">0</b></div>
-                <div class="stat-row"><span>💪 Сила:</span><b id="p">1</b></div>
+        <!-- ==================== LEVEL 2 ==================== -->
+        <div id="level2" class="stranger-box rounded-2xl p-6 md:p-8 text-center hidden transition-all duration-500">
+            <div class="text-xs font-bold text-red-400 tracking-widest uppercase mb-2">Уровень 2</div>
+            <h2 class="text-xl md:text-2xl font-bold text-white mb-6 leading-relaxed stranger-title">
+                Кто был девушкой Майка?
+            </h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <button onclick="triggerOdiTrap()" class="btn-stranger py-3.5 px-4 rounded-xl text-lg font-bold tracking-wider">ОДИ</button>
+                <button onclick="triggerGenericFail()" class="btn-stranger py-3.5 px-4 rounded-xl text-lg font-bold tracking-wider">МАКС</button>
+                <button onclick="triggerGenericFail()" class="btn-stranger py-3.5 px-4 rounded-xl text-lg font-bold tracking-wider">РОБИН</button>
+                <button onclick="handleCorrectNobody()" class="btn-stranger py-3.5 px-4 rounded-xl text-lg font-bold tracking-wider border-yellow-500">НИКТО</button>
             </div>
-            <button class="back-btn" onclick="openScreen('mainScreen')">🏠 На главную</button>
         </div>
 
-        <!-- 3. МАГАЗИН -->
-        <div id="shopScreen" class="screen">
-            <h2>🛒 Магазин</h2>
-            <div class="section-block">
-                <h3>🍖 Еда и Вода</h3>
-                <div class="item-row">
-                    <span>Корм (+Сытость, +1 Сила)</span>
-                    <button class="buy-btn" onclick="buyFood()">Купить (15G)</button>
+        <!-- ==================== UNIVERSAL TERMINAL ENDING ==================== -->
+        <div id="finalPassStage" class="hidden text-center transition-all duration-700">
+            <div class="stranger-box rounded-2xl p-6 md:p-8 text-center space-y-6 border-red-500 bg-black/95 shadow-[0_0_35px_rgba(229,9,20,0.7)]">
+                <div class="inline-block p-4 bg-red-950/80 rounded-full border border-red-500 text-red-500 mb-2">
+                    <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
                 </div>
-                <div class="item-row">
-                    <span>Бутылка воды (+Жажда)</span>
-                    <button class="buy-btn" onclick="buyWater()">Купить (5G)</button>
-                </div>
-            </div>
-            <button class="back-btn" onclick="openScreen('mainScreen')">🏠 На главную</button>
-        </div>
 
-        <!-- 3.1 АПТЕКА -->
-        <div id="pharmacyScreen" class="screen">
-            <h2>💊 Ветеринарная аптека</h2>
-            <div class="pharmacy-box">
-                <p>🏥 Если котик заболел или устал, здесь можно купить лекарства и витамины для здоровья.</p>
-                <div class="item-row" style="margin-top:10px;">
-                    <span>Витамины (+20 Здоровья)</span>
-                    <button class="buy-btn" onclick="buyMedicine(20, 25)">Купить (25G)</button>
-                </div>
-                <div class="item-row">
-                    <span>Элитное лекарство (Полное здоровье ❤️)</span>
-                    <button class="buy-btn" onclick="buyMedicine(100, 70)">Купить (70G)</button>
-                </div>
-            </div>
-            <button class="back-btn" onclick="openScreen('mainScreen')">🏠 На главную</button>
-        </div>
+                <div class="terminal-font text-red-500 text-xs tracking-widest uppercase">HAWKINS NATIONAL LABORATORY TERMINAL</div>
 
-        <!-- 4. ШКОЛА -->
-        <div id="schoolScreen" class="screen">
-            <h2>🏫 Школа (Офлайн и Онлайн)</h2>
-            
-            <div class="section-block" style="margin-bottom: 10px;">
-                <h3>🌟 Доска почёта класса</h3>
-                <div id="honorBoard" class="honor-board" style="font-size: 12px; color: #ffcc00; text-align: center; padding: 6px;">
-                    Пока пусто. Учись на 4 и 5, чтобы попасть сюда!
+                <h2 class="text-xl md:text-3xl font-black stranger-title leading-tight">
+                    ДОСТУП РАЗРЕШЁН!
+                </h2>
+
+                <p class="text-red-400 font-bold uppercase tracking-widest text-xs md:text-sm">
+                    Ты настоящий фанат «Очень странных дел»
+                </p>
+
+                <div class="terminal-font text-gray-300 text-sm md:text-base leading-relaxed text-left bg-black/80 p-4 rounded-xl border border-red-900/60 space-y-3">
+                    <p class="text-green-400">&gt; SYSTEM_STATUS: CLEARANCE_VERIFIED</p>
+                    <p>🔥 <strong>Испытание пройдено!</strong> Ты не дала щупальцам Изнанки затянуть тебя в темноту и успешно обошла главную ловушку с Оди.</p>
+                    <p>Добро пожаловать в клуб выживших в Хоукинсе! Поделись этим тестом с другими фанатами ОСД — проверь, смогут ли они пройти пропуск!</p>
+                </div>
+
+                <div class="pt-2">
+                    <button onclick="resetQuest()" class="btn-stranger py-3 px-8 rounded-xl font-bold uppercase text-sm w-full">
+                        Пройти снова
+                    </button>
                 </div>
             </div>
-
-            <button style="background:#e91e63; color:#fff; width:100%; margin-bottom:10px;" onclick="startOnlineSchool()">💻 Подключиться к Онлайн-уроку</button>
-
-            <div class="message" id="schoolMsg">Выберите класс для урока в школе:</div>
-            
-            <div id="gradeSelector" class="section-block">
-                <div class="grades-grid">
-                    <button class="grade-btn" onclick="selectGrade(1)">1 Класс</button>
-                    <button class="grade-btn" onclick="selectGrade(2)">2 Класс</button>
-                    <button class="grade-btn" onclick="selectGrade(3)">3 Класс</button>
-                    <button class="grade-btn" onclick="selectGrade(4)">4 Класс</button>
-                    <button class="grade-btn" onclick="selectGrade(5)">5 Класс</button>
-                    <button class="grade-btn" onclick="selectGrade(6)">6 Класс</button>
-                    <button class="grade-btn" onclick="selectGrade(7)">7 Класс</button>
-                    <button class="grade-btn" onclick="selectGrade(8)">8 Класс</button>
-                    <button class="grade-btn" onclick="selectGrade(9)">9 Класс</button>
-                    <button class="grade-btn" onclick="selectGrade(10)">10 Класс</button>
-                    <button class="grade-btn" onclick="selectGrade(11)">11 Класс</button>
-                </div>
-            </div>
-
-            <div id="subjectSelector" class="section-block" style="display:none;">
-                <h3 id="selectedGradeTitle" style="color:#ffcc00; margin:0 0 6px 0;"></h3>
-                <div id="subjectsList"></div>
-                <button class="back-btn" onclick="backToGrades()">Сменить класс</button>
-            </div>
-
-            <div id="classRoom" class="class-room" style="display:none;">
-                <h3 id="classTitle" style="color:#ffcc00; margin:0 0 6px 0;"></h3>
-                <div id="progressCounter" style="font-size: 12px; color: #00bcd4; margin-bottom: 4px;">Вопрос 1 из 5</div>
-                <div id="taskText" style="font-size: 15px; margin: 8px 0; font-weight: bold;"></div>
-                <input type="text" id="taskAnswer" class="task-input" placeholder="Ответ"><br>
-                <button id="actionBtn" style="background:#4CAF50; color:#fff;" onclick="checkAnswer()">Ответить</button>
-                <button style="background:#f44336; color:#fff;" onclick="backToSubjects()">Назад</button>
-            </div>
-
-            <button class="back-btn" onclick="openScreen('mainScreen')">🏠 На главную</button>
         </div>
 
-        <!-- 5. ДНЕВНИК -->
-        <div id="diaryScreen" class="screen">
-            <h2>📖 Школьный дневник</h2>
-            <div class="diary-list" id="diaryList">
-                <p style="color: #888; text-align: center; margin-top: 15px;">Пока нет оценок.</p>
-            </div>
-            <button class="back-btn" onclick="openScreen('mainScreen')">🏠 На главную</button>
-        </div>
+    </main>
 
-        <!-- 6. СЕРИАЛЫ -->
-        <div id="seriesScreen" class="screen">
-            <h2>📺 Сериалы</h2>
-            <div class="series-box">
-                <p>🎬 Время расслабиться и посмотреть интересные шоу вместе с котиком!</p>
-                <button style="background:#e91e63; color:#fff; width:100%; margin-top:5px;" onclick="watchSeries('Очень странные дела')">Смотреть «Очень странные дела»</button>
-                <button style="background:#9c27b0; color:#fff; width:100%; margin-top:5px;" onclick="watchSeries('Время приключений')">Смотреть «Время приключений»</button>
-            </div>
-            <button class="back-btn" onclick="openScreen('mainScreen')">🏠 На главную</button>
-        </div>
+    <!-- FOOTER -->
+    <footer class="z-20 text-center text-xs text-red-900 tracking-widest uppercase my-2">
+        Stranger Things • OSD Interactive Quest
+    </footer>
 
-        <!-- 7. КАЛЕНДАРЬ -->
-        <div id="calendarScreen" class="screen">
-            <h2>📅 Календарь, Время и Погода</h2>
-            <div class="calendar-box">
-                <p>🗓 <b>Дата:</b> <span id="liveDate" style="color:#ffcc00;">Загрузка...</span></p>
-                <p>⏰ <b>Точное время:</b> <span id="liveClock" style="color:#00bcd4; font-size: 16px; font-weight: bold;">00:00:00</span></p>
-                <p>🌡 <b>Температура на улице:</b> <span id="liveTemp" style="color:#ff5252; font-weight: bold;">+15°C (Осень)</span></p>
-                <p>🍂 <b>Сезон:</b> Октябрь</p>
-                <p>🎓 <b>Статус:</b> Учёба в школе (3 класс)</p>
-            </div>
-            <button class="back-btn" onclick="openScreen('mainScreen')">🏠 На главную</button>
-        </div>
+    <!-- SCRIPT LOGIC -->
+    <script>
+        // --- Floating Ash/Spores Background ---
+        const canvas = document.getElementById('sporesCanvas');
+        const ctx = canvas.getContext('2d');
+        let spores = [];
 
-        <!-- 8. КОММУНАЛКА -->
-        <div id="utilityScreen" class="screen">
-            <h2>💡 Коммунальные услуги</h2>
-            <div class="utility-box">
-                <p>🏠 Жильё, свет и вода требуют оплаты.</p>
-                <p>⚡ Счет к оплате: <b style="color:#ffcc00;">500 монет</b></p>
-                <button style="background:#4CAF50; color:#fff; width:100%;" onclick="payUtilities()">Оплатить коммуналку</button>
-            </div>
-            <button class="back-btn" onclick="openScreen('mainScreen')">🏠 На главную</button>
-        </div>
-    </div>
-</div>
-
-<script>
-let score = parseInt(localStorage.getItem('catScore')) || 79;
-let money = parseInt(localStorage.getItem('catMoney')) || 50;
-let power = parseInt(localStorage.getItem('catPower')) || 1;
-let health = parseInt(localStorage.getItem('catHealth')) || 100;
-let thirst = parseInt(localStorage.getItem('catThirst')) || 100;
-let warmth = parseInt(localStorage.getItem('catWarmth')) || 100;
-let knowledge = parseInt(localStorage.getItem('catKnowledge')) || 0;
-let diaryGrades = JSON.parse(localStorage.getItem('catDiary')) || [];
-let currentLang = 'ru';
-
-const translations = {
-    ru: {
-        title: "🐾 Кошарик",
-        langTitle: "Какой вы хотите язык?",
-        langSub: "Выберите страну / язык",
-        startBtn: "🚀 Начать игру",
-        mainMsg: "Гладь котика, следи за уроками и настроением!"
-    },
-    en: {
-        title: "🐾 Kosharik",
-        langTitle: "What language do you want?",
-        langSub: "Select country / language",
-        startBtn: "🚀 Start Game",
-        mainMsg: "Pet the cat, track your lessons and mood!"
-    },
-    fr: {
-        title: "🐾 Kosharik",
-        langTitle: "Quelle langue voulez-vous?",
-        langSub: "Sélectionnez le pays / la langue",
-        startBtn: "🚀 Commencer le jeu",
-        mainMsg: "Caressez le chat, suivez vos cours et votre humeur!"
-    }
-};
-
-const countries = [
-    { name: "🇷🇺 Россия", code: "ru" }, { name: "🇺🇸 USA", code: "en" },
-    { name: "🇫🇷 Франция", code: "fr" }, { name: "🇬🇧 Англия", code: "en" },
-    { name: "🇩🇪 Германия", code: "en" }, { name: "🇪🇸 Испания", code: "en" },
-    { name: "🇮🇹 Италия", code: "en" }, { name: "🇨🇦 Канада", code: "en" },
-    { name: "🇯🇵 Япония", code: "en" }, { name: "🇧🇷 Бразилия", code: "en" },
-    { name: "🇰🇿 Казахстан", code: "ru" }, { name: "🇧🇾 Беларусь", code: "ru" }
-];
-
-function renderCountries(list) {
-    let container = document.getElementById('countriesList');
-    if(!container) return;
-    container.innerHTML = '';
-    list.forEach(item => {
-        let div = document.createElement('div');
-        div.className = 'country-item';
-        div.innerText = item.name;
-        div.onclick = () => {
-            document.getElementById('countrySearch').value = item.name;
-            currentLang = item.code || 'en';
-            document.querySelectorAll('.country-item').forEach(i => i.style.background = 'transparent');
-            div.style.background = '#3f51b5';
-            applyLanguage();
-        };
-        container.appendChild(div);
-    });
-}
-renderCountries(countries);
-
-function filterCountries() {
-    let q = document.getElementById('countrySearch').value.toLowerCase();
-    renderCountries(countries.filter(c => c.name.toLowerCase().includes(q)));
-}
-
-function applyLanguage() {
-    let t = translations[currentLang] || translations['en'];
-    document.getElementById('mainTitle').innerText = t.title;
-    document.getElementById('langTitleText').innerText = t.langTitle;
-    document.getElementById('langSubtitleText').innerText = t.langSub;
-    document.getElementById('startBtn').innerText = t.startBtn;
-    document.getElementById('msg').innerText = t.mainMsg;
-}
-
-function enterGame() {
-    document.getElementById('langScreen').style.display = 'none';
-    document.getElementById('gameMainWrapper').style.display = 'block';
-    updateUI();
-    checkHonorBoard();
-}
-
-function openScreen(id) {
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
-    
-    if(id === 'mainScreen') document.getElementById('nav-main').classList.add('active');
-    if(id === 'statsScreen') document.getElementById('nav-stats').classList.add('active');
-    if(id === 'shopScreen') document.getElementById('nav-shop').classList.add('active');
-    if(id === 'pharmacyScreen') document.getElementById('nav-pharmacy').classList.add('active');
-    if(id === 'schoolScreen') { document.getElementById('nav-school').classList.add('active'); resetSchoolView(); checkHonorBoard(); }
-    if(id === 'diaryScreen') { document.getElementById('nav-diary').classList.add('active'); renderDiary(); }
-    if(id === 'seriesScreen') document.getElementById('nav-series').classList.add('active');
-    if(id === 'calendarScreen') document.getElementById('nav-calendar').classList.add('active');
-    if(id === 'utilityScreen') document.getElementById('nav-utility').classList.add('active');
-}
-
-// Поглаживание котика и шипение
-const meowSounds = ["Мур-мур! 🐾", "Мяу! 😺", "Марио доволен! ❤️"];
-const hissSounds = [
-    "Ш-ш-ш! 😾 Зачем ты так?!",
-    "Р-р-р! Котик недоволен! 🙀",
-    "Шшш! Марио царапается! 😾🐾"
-];
-
-let catBox = document.getElementById('catBox');
-if(catBox) {
-    catBox.addEventListener('click', (e) => {
-        let rect = catBox.getBoundingClientRect();
-        let x = e.clientX - rect.left;
-        let isHiss = x < rect.width / 3;
-
-        if(isHiss) {
-            let randomHiss = hissSounds[Math.floor(Math.random() * hissSounds.length)];
-            document.getElementById('msg').innerText = randomHiss;
-            document.getElementById('msg').style.color = '#ff5252';
-            score = Math.max(0, score - 2);
-            catBox.style.transform = 'scale(0.95) rotate(-5deg)';
-            setTimeout(() => { catBox.style.transform = 'none'; }, 150);
-        } else {
-            let randomMeow = meowSounds[Math.floor(Math.random() * meowSounds.length)];
-            document.getElementById('msg').innerText = randomMeow;
-            document.getElementById('msg').style.color = '#ffcc00';
-            score += power;
-            money += 1;
-            catBox.style.transform = 'scale(1.05)';
-            setTimeout(() => { catBox.style.transform = 'none'; }, 150);
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
         }
-        save();
-        updateUI();
-    });
-}
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
 
-function getMoney() { money += 10; save(); updateUI(); }
-function watchAd() { money += 30; save(); updateUI(); }
-function buyFood() {
-    if(money >= 15) { money -= 15; power += 1; score += 10; save(); updateUI(); alert("Вкусно! Корм куплен 🍖"); }
-    else alert("Недостаточно монет!");
-}
-function buyWater() {
-    if(money >= 5) { money -= 5; thirst = Math.min(100, thirst + 30); save(); updateUI(); alert("Кошарик попил воды 💧"); }
-    else alert("Недостаточно монет!");
-}
-function buyMedicine(hpAdd, cost) {
-    if(money >= cost) {
-        money -= cost;
-        health = Math.min(100, health + hpAdd);
-        save();
-        updateUI();
-        alert(`Лекарство куплено! Здоровье восстановлено ❤️ (+${hpAdd})`);
-    } else {
-        alert("Не хватает монет в аптеке!");
-    }
-}
-function payUtilities() {
-    if(money >= 500) { money -= 500; warmth = 100; save(); updateUI(); alert("Коммуналка оплачена (500 монет)! Свет и тепло есть 💡🔥"); }
-    else alert("Не хватает денег на коммуналку! Нужно 500 монет.");
-}
-function playChess() {
-    knowledge += 5;
-    save();
-    updateUI();
-    alert("Партия в шахматы сыграна! +5 Знаний ♟️🧠");
-}
-function watchSeries(title) {
-    score = Math.min(100, score + 10);
-    save();
-    updateUI();
-    alert(`Вы посмотрели сериал «${title}» вместе с котиком! Настроение улучшилось 🍿🐾`);
-}
-
-let currentGrade = 1, currentSubjectId = '', currentSubjectName = '', currentCorrect = 0, qIndex = 0;
-let peTimer = null, peTimeLeft = 20, peTargetWord = 'русский', peCount = 0;
-
-function resetSchoolView() {
-    document.getElementById('gradeSelector').style.display = 'block';
-    document.getElementById('subjectSelector').style.display = 'none';
-    document.getElementById('classRoom').style.display = 'none';
-    if(peTimer) clearInterval(peTimer);
-}
-
-function selectGrade(grade) {
-    currentGrade = grade;
-    document.getElementById('gradeSelector').style.display = 'none';
-    document.getElementById('subjectSelector').style.display = 'block';
-    document.getElementById('selectedGradeTitle').innerText = `${grade} Класс`;
-    
-    let list = document.getElementById('subjectsList');
-    list.innerHTML = '';
-    let subs = [
-        { id: 'math', name: '📐 Математика' },
-        { id: 'rus', name: '📖 Русский язык' },
-        { id: 'eng', name: '🇬🇧 Английский язык' },
-        { id: 'chess', name: '♟ Шахматы' },
-        { id: 'PE', name: '🏃 Физкультура' }
-    ];
-    subs.forEach(s => {
-        let btn = document.createElement('button');
-        btn.className = 'subject-btn';
-        btn.innerText = s.name;
-        btn.onclick = () => startLesson(s.id, s.name);
-        list.appendChild(btn);
-    });
-}
-
-function startOnlineSchool() {
-    knowledge += 15;
-    money += 20;
-    save();
-    updateUI();
-    alert("💻 Онлайн-урок успешно пройден! Получено +15 Знаний и +20 монет за активность! 🎓");
-}
-
-function backToGrades() { resetSchoolView(); }
-function backToSubjects() { 
-    document.getElementById('classRoom').style.display = 'none'; 
-    document.getElementById('subjectSelector').style.display = 'block'; 
-    if(peTimer) clearInterval(peTimer);
-}
-
-function startLesson(id, name) {
-    currentSubjectId = id; currentSubjectName = name; qIndex = 0; currentCorrect = 0;
-    document.getElementById('subjectSelector').style.display = 'none';
-    document.getElementById('classRoom').style.display = 'block';
-    document.getElementById('classTitle').innerText = name;
-    
-    if(id === 'PE') {
-        startPELesson();
-    } else {
-        nextTask();
-    }
-}
-
-// Физкультура: написать слово 5 раз за 20 секунд
-function startPELesson() {
-    peTimeLeft = 20;
-    peCount = 0;
-    peTargetWord = ['русский', 'спорт', 'бег', 'сила', 'кошарик'][Math.floor(Math.random() * 5)];
-    document.getElementById('progressCounter').innerText = `⏰ Осталось: ${peTimeLeft} сек. | Написано: ${peCount}/5`;
-    document.getElementById('taskText').innerText = `Быстро впиши слово "${peTargetWord}" 5 раз!`;
-    let ansInput = document.getElementById('taskAnswer');
-    if(ansInput) ansInput.value = '';
-    
-    let actionBtn = document.getElementById('actionBtn');
-    if(actionBtn) {
-        actionBtn.innerText = 'Записать';
-        actionBtn.onclick = checkPEWord;
-    }
-    
-    if(peTimer) clearInterval(peTimer);
-    peTimer = setInterval(() => {
-        peTimeLeft--;
-        document.getElementById('progressCounter').innerText = `⏰ Осталось: ${peTimeLeft} сек. | Написано: ${peCount}/5`;
-        if(peTimeLeft <= 0) {
-            clearInterval(peTimer);
-            finishPELesson(false);
+        class Spore {
+            constructor() { this.reset(); }
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2.5 + 0.5;
+                this.speedX = (Math.random() - 0.5) * 0.5;
+                this.speedY = (Math.random() - 0.5) * 0.8 - 0.2;
+                this.opacity = Math.random() * 0.7 + 0.2;
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                if (this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height) this.reset();
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(229, 9, 20, ${this.opacity})`;
+                ctx.shadowBlur = 6;
+                ctx.shadowColor = '#e50914';
+                ctx.fill();
+            }
         }
-    }, 1000);
-}
 
-function checkPEWord() {
-    let ansInput = document.getElementById('taskAnswer');
-    let ans = ansInput ? ansInput.value.trim().toLowerCase() : '';
-    if(ans === peTargetWord) {
-        peCount++;
-        if(ansInput) ansInput.value = '';
-        if(peCount >= 5) {
-            clearInterval(peTimer);
-            finishPELesson(true);
-        } else {
-            document.getElementById('progressCounter').innerText = `⏰ Осталось: ${peTimeLeft} сек. | Написано: ${peCount}/5`;
+        for (let i = 0; i < 65; i++) spores.push(new Spore());
+
+        function animateSpores() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            spores.forEach(spore => { spore.update(); spore.draw(); });
+            requestAnimationFrame(animateSpores);
         }
-    }
-}
+        animateSpores();
 
-function finishPELesson(success) {
-    document.getElementById('classRoom').style.display = 'none';
-    document.getElementById('subjectSelector').style.display = 'block';
-    let mark = success ? 5 : 3;
-    knowledge += currentGrade * mark;
-    diaryGrades.unshift({ subject: currentSubjectName, grade: currentGrade, mark: mark, date: new Date().toLocaleDateString() });
-    save();
-    updateUI();
-    checkHonorBoard();
-    alert(success ? "Отлично! Нормативы по физкультуре сданы на 5! 🏃" : "Время вышло! Оценка: 3");
-}
+        // --- Pure Web Audio API Synthesizer (Zero external media dependencies) ---
+        let audioCtx = null;
+        let isMuted = false;
+        let currentMode = 'main'; // 'main', 'trap', 'none'
+        let synthTimer = null;
 
-function nextTask() {
-    let ansInput = document.getElementById('taskAnswer');
-    if(ansInput) ansInput.value = '';
-    let actionBtn = document.getElementById('actionBtn');
-    if(actionBtn) {
-        actionBtn.innerText = 'Ответить';
-        actionBtn.onclick = checkAnswer;
-    }
+        function initAudioContext() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+        }
 
-    if(qIndex >= 5) { finishLesson(); return; }
-    document.getElementById('progressCounter').innerText = `Вопрос ${qIndex + 1} из 5`;
-    
-    if(currentSubjectId === 'math') {
-        let a = Math.floor(Math.random()*15)+1, b = Math.floor(Math.random()*15)+1;
-        window.currentAns = String(a + b);
-        document.getElementById('taskText').innerText = `Сколько будет: ${a} + ${b} = ?`;
-    } else if(currentSubjectId === 'rus') {
-        let words = [
-            {w: 'молоко', q: 'Вставь букву: м_локо (о/а)'},
-            {w: 'собака', q: 'Вставь букву: с_бака (о/а)'},
-            {w: 'корова', q: 'Вставь букву: к_рова (о/а)'},
-            {w: 'ученик', q: 'Напиши слово полностью: ученик'}
+        // Frequencies for iconic Stranger Things C-major 7th arpeggio (C E G B C B G E)
+        const mainArpFreqs = [
+            130.81, // C3
+            164.81, // E3
+            196.00, // G3
+            246.94, // B3
+            261.63, // C4
+            246.94, // B3
+            196.00, // G3
+            164.81  // E3
         ];
-        let item = words[Math.floor(Math.random()*words.length)];
-        window.currentAns = item.w;
-        document.getElementById('taskText').innerText = item.q;
-    } else if(currentSubjectId === 'eng') {
-        let items = [
-            {w: 'cat', q: 'Переведи на английский: кот'},
-            {w: 'dog', q: 'Переведи на английский: собака'},
-            {w: 'school', q: 'Переведи на английский: школа'},
-            {w: 'friend', q: 'Переведи на английский: друг'}
+        let mainArpIdx = 0;
+
+        // Frequencies for slowed "Innocence" trap ambient melody
+        const trapFreqs = [
+            110.00, // A2
+            130.81, // C3
+            146.83, // D3
+            164.81, // E3
+            130.81, // C3
+            98.00,  // G2
+            87.31,  // F2
+            110.00  // A2
         ];
-        let item = items[Math.floor(Math.random()*items.length)];
-        window.currentAns = item.w;
-        document.getElementById('taskText').innerText = item.q;
-    } else if(currentSubjectId === 'chess') {
-        let items = [
-            {w: 'мат', q: 'Как называется победа в шахматы одним словом?'},
-            {w: 'пешка', q: 'Какая фигура ходит только вперед, а бьет по диагонали?'},
-            {w: 'ферзь', q: 'Самая сильная фигура на доске:'}
-        ];
-        let item = items[Math.floor(Math.random()*items.length)];
-        window.currentAns = item.w;
-        document.getElementById('taskText').innerText = item.q;
-    }
-}
+        let trapArpIdx = 0;
 
-function checkAnswer() {
-    let ansInput = document.getElementById('taskAnswer');
-    let ans = ansInput ? ansInput.value.trim().toLowerCase() : '';
-    if(ans === window.currentAns) currentCorrect++;
-    qIndex++;
-    nextTask();
-}
+        function playSynthStep() {
+            if (isMuted || !audioCtx || currentMode === 'none') return;
 
-function finishLesson() {
-    document.getElementById('classRoom').style.display = 'none';
-    document.getElementById('subjectSelector').style.display = 'block';
-    let mark = currentCorrect >= 4 ? 5 : (currentCorrect === 3 ? 4 : 3);
-    knowledge += currentGrade * mark;
-    diaryGrades.unshift({ subject: currentSubjectName, grade: currentGrade, mark: mark, date: new Date().toLocaleDateString() });
-    save();
-    updateUI();
-    checkHonorBoard();
-    alert(`Урок завершен! Оценка: ${mark}`);
-}
+            const now = audioCtx.currentTime;
 
-function renderDiary() {
-    let list = document.getElementById('diaryList');
-    if(!list) return;
-    list.innerHTML = diaryGrades.length ? '' : '<p style="color: #888; text-align: center;">Пока нет оценок.</p>';
-    diaryGrades.forEach(d => {
-        list.innerHTML += `<div class="diary-item"><span><b>${d.subject}</b> (${d.grade} кл)</span><span class="grade-badge mark-${d.mark}">${d.mark}</span></div>`;
-    });
-}
+            if (currentMode === 'main') {
+                // Analog Synth Sawtooth Bass Arpeggio
+                const freq = mainArpFreqs[mainArpIdx % mainArpFreqs.length];
+                mainArpIdx++;
 
-function checkHonorBoard() {
-    let board = document.getElementById('honorBoard');
-    if(!board) return;
-    if (diaryGrades.length === 0) {
-        board.innerHTML = "Пока пусто. Учись на 4 и 5, чтобы попасть сюда!";
-        return;
-    }
-    let goodMarks = diaryGrades.filter(d => d.mark >= 4).length;
-    if (goodMarks >= diaryGrades.length * 0.7) {
-        board.innerHTML = "🏆 <b>Кошарик</b> (Отличник учебы!)";
-    } else {
-        board.innerHTML = "⚠️ Нужны оценки 4 и 5, чтобы попасть на доску почёта!";
-    }
-}
+                const osc = audioCtx.createOscillator();
+                const filter = audioCtx.createBiquadFilter();
+                const gain = audioCtx.createGain();
 
-// Живые часы и календарь с секундами и температурой
-function updateClock() {
-    let now = new Date();
-    let optionsDate = { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' };
-    let dateStr = now.toLocaleDateString('ru-RU', optionsDate);
-    let timeStr = now.toTimeString().split(' ')[0];
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(freq, now);
 
-    let dateEl = document.getElementById('liveDate');
-    let clockEl = document.getElementById('liveClock');
-    if(dateEl) dateEl.innerText = dateStr;
-    if(clockEl) clockEl.innerText = timeStr;
-}
-setInterval(updateClock, 1000);
-updateClock();
+                // Lowpass filter envelope for analog synth character
+                filter.type = 'lowpass';
+                filter.frequency.setValueAtTime(400, now);
+                filter.frequency.exponentialRampToValueAtTime(2200, now + 0.04);
+                filter.frequency.exponentialRampToValueAtTime(350, now + 0.18);
 
-function save() {
-    localStorage.setItem('catScore', score);
-    localStorage.setItem('catMoney', money);
-    localStorage.setItem('catPower', power);
-    localStorage.setItem('catHealth', health);
-    localStorage.setItem('catThirst', thirst);
-    localStorage.setItem('catWarmth', warmth);
-    localStorage.setItem('catKnowledge', knowledge);
-    localStorage.setItem('catDiary', JSON.stringify(diaryGrades));
-}
+                gain.gain.setValueAtTime(0.28, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
 
-function updateUI() {
-    let elS = document.getElementById('s'); if(elS) elS.innerText = score;
-    let elM = document.getElementById('m'); if(elM) elM.innerText = money;
-    let elP = document.getElementById('p'); if(elP) elP.innerText = power;
-    let elHp = document.getElementById('hp'); if(elHp) elHp.innerText = health;
-    let elTh = document.getElementById('thirst'); if(elTh) elTh.innerText = thirst;
-    let elW = document.getElementById('warmth'); if(elW) elW.innerText = warmth;
-    let elKb = document.getElementById('kb'); if(elKb) elKb.innerText = knowledge;
-}
-</script>
+                osc.connect(filter);
+                filter.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                osc.start(now);
+                osc.stop(now + 0.23);
+
+                // Add sub bass layer on roots
+                if (mainArpIdx % 8 === 1) {
+                    const subOsc = audioCtx.createOscillator();
+                    const subGain = audioCtx.createGain();
+                    subOsc.type = 'sine';
+                    subOsc.frequency.setValueAtTime(65.41, now); // C2 Sub
+                    subGain.gain.setValueAtTime(0.4, now);
+                    subGain.gain.exponentialRampToValueAtTime(0.01, now + 0.7);
+                    subOsc.connect(subGain);
+                    subGain.connect(audioCtx.destination);
+                    subOsc.start(now);
+                    subOsc.stop(now + 0.75);
+                }
+
+                synthTimer = setTimeout(playSynthStep, 130); // ~115 BPM 16th feel
+
+            } else if (currentMode === 'trap') {
+                // Slowed/Reverbed "Innocence" Melancholic Ambient Synth
+                const freq = trapFreqs[trapArpIdx % trapFreqs.length];
+                trapArpIdx++;
+
+                const osc1 = audioCtx.createOscillator();
+                const osc2 = audioCtx.createOscillator();
+                const filter = audioCtx.createBiquadFilter();
+                const gain = audioCtx.createGain();
+
+                // Detuned dual oscillators for thick slowed ambient texture
+                osc1.type = 'triangle';
+                osc2.type = 'sine';
+                osc1.frequency.setValueAtTime(freq, now);
+                osc2.frequency.setValueAtTime(freq * 0.5, now); // Sub octave
+
+                filter.type = 'lowpass';
+                filter.frequency.setValueAtTime(250, now);
+                filter.frequency.linearRampToValueAtTime(700, now + 0.3);
+                filter.frequency.linearRampToValueAtTime(180, now + 1.2);
+
+                gain.gain.setValueAtTime(0.01, now);
+                gain.gain.linearRampToValueAtTime(0.35, now + 0.2);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 1.3);
+
+                osc1.connect(filter);
+                osc2.connect(filter);
+                filter.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                osc1.start(now);
+                osc2.start(now);
+                osc1.stop(now + 1.35);
+                osc2.stop(now + 1.35);
+
+                synthTimer = setTimeout(playSynthStep, 850); // Slowed tempo
+            }
+        }
+
+        function setAudioMode(mode) {
+            initAudioContext();
+            if (synthTimer) clearTimeout(synthTimer);
+            currentMode = mode;
+            if (mode !== 'none' && !isMuted) {
+                playSynthStep();
+            }
+        }
+
+        document.getElementById('audioBtn').addEventListener('click', () => {
+            initAudioContext();
+            isMuted = !isMuted;
+            document.getElementById('musicOnIcon').classList.toggle('hidden', isMuted);
+            document.getElementById('musicOffIcon').classList.toggle('hidden', !isMuted);
+
+            if (!isMuted) {
+                if (currentMode === 'none') currentMode = 'main';
+                playSynthStep();
+            } else {
+                if (synthTimer) clearTimeout(synthTimer);
+            }
+        });
+
+        // Start main audio loop on first click/touch
+        document.body.addEventListener('click', function startAudioOnTouch() {
+            initAudioContext();
+            if (!isMuted && currentMode === 'main' && !synthTimer) {
+                playSynthStep();
+            }
+        }, { once: true });
+
+        // --- Quest Logic ---
+        function handleL1Answer(isCorrect) {
+            initAudioContext();
+            if (isCorrect) {
+                document.getElementById('level1').classList.add('hidden');
+                document.getElementById('level2').classList.remove('hidden');
+            } else {
+                triggerGenericFail();
+            }
+        }
+
+        function triggerGenericFail() {
+            document.getElementById('odiTrapContent').classList.add('hidden');
+            document.getElementById('genericFailContent').classList.remove('hidden');
+            document.getElementById('tentaclesGrabOverlay').classList.add('active');
+        }
+
+        function triggerOdiTrap() {
+            // Switch to slowed Innocence trap synth
+            setAudioMode('trap');
+
+            // Populate "ОДИ БОЛЬШЕ НЕТ" repeated exactly 10 times
+            const container = document.getElementById('odiRepeatedBlock');
+            container.innerHTML = '';
+            for (let i = 0; i < 10; i++) {
+                const line = document.createElement('div');
+                line.className = 'odi-dead-line font-black text-sm md:text-base text-center';
+                line.innerText = 'ОДИ БОЛЬШЕ НЕТ';
+                container.appendChild(line);
+            }
+
+            document.getElementById('genericFailContent').classList.add('hidden');
+            document.getElementById('odiTrapContent').classList.remove('hidden');
+            document.getElementById('tentaclesGrabOverlay').classList.add('active');
+        }
+
+        function closeTentacleOverlay() {
+            document.getElementById('tentaclesGrabOverlay').classList.remove('active');
+        }
+
+        function handleCorrectNobody() {
+            setAudioMode('main');
+            document.getElementById('level2').classList.add('hidden');
+            document.getElementById('finalPassStage').classList.remove('hidden');
+        }
+
+        function proceedToSacrificeScene() {
+            closeTentacleOverlay();
+            setAudioMode('main');
+            document.getElementById('level2').classList.add('hidden');
+            document.getElementById('finalPassStage').classList.remove('hidden');
+        }
+
+        function resetQuest() {
+            closeTentacleOverlay();
+            setAudioMode('main');
+            document.getElementById('finalPassStage').classList.add('hidden');
+            document.getElementById('level2').classList.add('hidden');
+            document.getElementById('level1').classList.remove('hidden');
+        }
+    </script>
 </body>
 </html>
+```
