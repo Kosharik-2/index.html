@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="ru" translate="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="google" content="notranslate">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stranger Things RPG: Изнанка</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+        body {
+            background-color: #030712;
+            color: #f3f4f6;
+            font-family: monospace, sans-serif;
+            overflow-x: hidden;
+        }
+        .vignette {
+            box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.9);
+        }
+        .spores {
+            background-image: radial-gradient(rgba(239, 68, 68, 0.15) 1px, transparent 0);
+            background-size: 30px 30px;
+        }
+        /* Красный неоновый шрифт для текста */
+        .neon-red-text {
+            color: #ff1e1e;
+            text-shadow: 0 0 10px rgba(255, 30, 30, 0.5), 0 0 20px rgba(255, 30, 30, 0.2);
+            font-size: 1.25rem;
+            line-height: 1.75;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body class="spores min-h-screen flex flex-col items-center justify-between p-4 vignette">
+
+    <!-- Верхняя навигация (СКРЫТА, пока не пройдены задания) -->
+    <header id="main-navigation" class="hidden w-full max-w-2xl flex justify-center gap-4 mb-6 border-b border-red-900/50 pb-4">
+        <button onclick="switchTab('game')" id="tab-game" class="px-4 py-2 bg-red-950/80 border border-red-600 text-red-400 font-bold rounded shadow-[0_0_15px_rgba(220,38,38,0.4)] transition-all cursor-pointer">Игра</button>
+        <button onclick="switchTab('characters')" id="tab-characters" class="px-4 py-2 bg-gray-900 border border-gray-700 text-gray-400 hover:text-white rounded transition-all cursor-pointer">Персонажи / Скины</button>
+    </header>
+
+    <!-- Основной контейнер -->
+    <main class="w-full max-w-2xl bg-black/85 border-2 border-red-900/60 rounded-xl p-6 shadow-[0_0_30px_rgba(153,27,27,0.3)] relative">
+
+        <!-- 1. БЛОК ЗАДАНИЙ / ВОПРОСОВ (Показывается сразу) -->
+        <div id="quiz-container" class="space-y-6">
+            <div class="flex justify-between items-center mb-4 border-b border-red-900/40 pb-2">
+                <h1 class="text-lg font-bold text-red-500 tracking-wider">ПРОЙДИТЕ ВСЕ ЗАДАНИЯ, ЧТОБЫ ПОЛУЧИТЬ ДОСТУП</h1>
+                <span id="question-counter" class="text-xs text-red-400">Вопрос 1 из 3</span>
+            </div>
+
+            <div id="question-text" class="text-lg mb-6 text-gray-200">
+                <!-- Текст вопроса вставляется скриптом -->
+            </div>
+
+            <div id="answers-container" class="grid grid-cols-1 gap-3">
+                <!-- Варианты ответов подтягиваются скриптом -->
+            </div>
+            <div id="quiz-message" class="mt-4 text-center text-sm font-bold h-6"></div>
+        </div>
+
+        <!-- 2. ВКЛАДКА "ИГРА" (Доступна только после прохождения вопросов) -->
+        <div id="section-game" class="hidden space-y-6">
+            
+            <!-- Выбор персонажа Майк Уиллер -->
+            <div id="character-select-container" class="space-y-4">
+                <h2 class="text-xl font-bold text-red-500 text-center mb-2">ВЫБЕРИТЕ ПЕРСОНАЖА</h2>
+                <div class="border border-red-900/60 p-4 rounded bg-red-950/20 flex flex-col items-center gap-3">
+                    <div class="text-center">
+                        <h3 class="text-lg font-bold text-gray-100">Майк Уиллер</h3>
+                        <p class="text-xs text-red-400 mt-1">Главный персонаж (Лидер группы)</p>
+                    </div>
+                    <button onclick="startStory()" class="w-full py-3 bg-red-700 hover:bg-red-600 font-bold text-white rounded transition-all shadow-[0_0_10px_rgba(220,38,38,0.5)] cursor-pointer">Играть за Майка Уиллера</button>
+                </div>
+            </div>
+
+            <!-- Сюжетный режим 1 серии -->
+            <div id="story-container" class="hidden space-y-6">
+                <div class="border-b border-red-900/40 pb-2 flex justify-between items-center">
+                    <span id="story-title" class="text-sm text-red-500 font-bold uppercase tracking-widest">Отрывок 1</span>
+                    <span id="story-step-indicator" class="text-xs text-gray-400">Шаг 1 из 9</span>
+                </div>
+
+                <div id="story-text" class="min-h-[140px] bg-black/60 p-5 rounded border border-red-950 neon-red-text">
+                    <!-- Текст отрывка -->
+                </div>
+
+                <!-- Кнопки Назад / Далее -->
+                <div class="flex gap-3 pt-2">
+                    <button onclick="prevStoryStep()" id="story-prev-btn" class="w-1/3 py-3 bg-gray-900 hover:bg-gray-800 border border-gray-700 font-bold text-gray-300 rounded transition-all cursor-pointer">⬅ Назад</button>
+                    <button onclick="nextStoryStep()" id="story-next-btn" class="w-2/3 py-3 bg-red-800 hover:bg-red-700 font-bold text-white rounded transition-all cursor-pointer shadow-[0_0_10px_rgba(220,38,38,0.4)]">Далее ➔</button>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- 3. ВКЛАДКА "ПЕРСОНАЖИ / СКИНЫ" -->
+        <div id="section-characters" class="hidden space-y-4 text-center py-8">
+            <h2 class="text-2xl font-bold text-red-500">ПЕРСОНАЖИ И СКИНЫ</h2>
+            <p class="text-gray-400 text-sm">Остальные персонажи заблокированы.</p>
+            <div class="inline-block px-6 py-3 bg-red-950/50 border border-red-800 text-red-400 font-bold rounded-lg shadow-[0_0_15px_rgba(220,38,38,0.2)] mt-4">
+                СКОРО БУДЕТ (открывается за достижения)
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="text-xs text-red-900/80 mt-4 tracking-widest">
+        STRANGER THINGS: UPSIDE DOWN • 1983
+    </footer>
+
+    <script>
+        // Переключение вкладок (доступно только после прохождения заданий)
+        function switchTab(tabName) {
+            const gameTab = document.getElementById('tab-game');
+            const charsTab = document.getElementById('tab-characters');
+            const gameSection = document.getElementById('section-game');
+            const charsSection = document.getElementById('section-characters');
+
+            if (tabName === 'game') {
+                gameTab.className = "px-4 py-2 bg-red-950/80 border border-red-600 text-red-400 font-bold rounded shadow-[0_0_15px_rgba(220,38,38,0.4)] transition-all cursor-pointer";
+                charsTab.className = "px-4 py-2 bg-gray-900 border border-gray-700 text-gray-400 hover:text-white rounded transition-all cursor-pointer";
+                gameSection.classList.remove('hidden');
+                charsSection.classList.add('hidden');
+            } else {
+                charsTab.className = "px-4 py-2 bg-red-950/80 border border-red-600 text-red-400 font-bold rounded shadow-[0_0_15px_rgba(220,38,38,0.4)] transition-all cursor-pointer";
+                gameTab.className = "px-4 py-2 bg-gray-900 border border-gray-700 text-gray-400 hover:text-white rounded transition-all cursor-pointer";
+                charsSection.classList.remove('hidden');
+                gameSection.classList.add('hidden');
+            }
+        }
+
+        // Список заданий с вопросом про Оди!
+        const questions = [
+            {
+                q: "Как называется секретная правительственная лаборатория в городе Хоукинс?",
+                answers: ["А) Лаборатория Хоукинса", "Б) Зона 51", "В) Бункер под школой"],
+                correct: 0
+            },
+            {
+                q: "Какое имя дала себе девочка с суперспособностями, сбежавшая из лаборатории?",
+                answers: ["А) Макс", "Б) Одиннадцать (Оди)", "В) Нэнси"],
+                correct: 1
+            },
+            {
+                q: "Правда ли, что главный разум Изнанки — это Векна?",
+                answers: ["А) Да, это и есть Векна", "Б) Нет, главный разум Изнанки — это отдельный коллективный разум", "В) Это обычный монстр"],
+                correct: 1
+            }
+        ];
+
+        let currentQuestion = 0;
+
+        function loadQuestion() {
+            document.getElementById('question-counter').textContent = `Вопрос ${currentQuestion + 1} из ${questions.length}`;
+            document.getElementById('question-text').textContent = questions[currentQuestion].q;
+            const container = document.getElementById('answers-container');
+            container.innerHTML = '';
+            
+            questions[currentQuestion].answers.forEach((ans, index) => {
+                const btn = document.createElement('button');
+                btn.onclick = () => checkAnswer(index);
+                btn.className = "text-left p-3 rounded bg-red-950/40 border border-red-800/60 hover:bg-red-900/60 transition-all cursor-pointer text-gray-300";
+                btn.textContent = ans;
+                container.appendChild(btn);
+            });
+            document.getElementById('quiz-message').textContent = "";
+        }
+
+        function checkAnswer(selectedIndex) {
+            const messageEl = document.getElementById('quiz-message');
+            if (selectedIndex === questions[currentQuestion].correct) {
+                currentQuestion++;
+                if (currentQuestion < questions.length) {
+                    messageEl.className = "mt-4 text-center text-sm font-bold h-6 text-green-500";
+                    messageEl.textContent = "Верно! Переход к следующему вопросу...";
+                    setTimeout(loadQuestion, 1000);
+                } else {
+                    // Все вопросы пройдены: открываем навигацию и игру!
+                    document.getElementById('quiz-container').classList.add('hidden');
+                    document.getElementById('main-navigation').classList.remove('hidden');
+                    document.getElementById('section-game').classList.remove('hidden');
+                }
+            } else {
+                messageEl.className = "mt-4 text-center text-sm font-bold h-6 text-red-500";
+                messageEl.textContent = "Ошибка! Попробуйте снова.";
+            }
+        }
+
+        // Запуск первого вопроса при загрузке
+        loadQuestion();
+
+        // Логика сюжета
+        const storySteps = [
+            "Вы играете с мальчиками в D&D в подвале дома Майка. Партия длится уже 10 часов, и в комнате пахнет попкорном.",
+            "Майк ставит на стол фигурку Демогоргона. Дастин кричит кастовать защиту, а Лукас требует стрелять огненным шаром!",
+            "Уилл бросает кубик, но тот улетает под стеллаж. Уилл заглядывает под шкаф и тихо говорит: «Выпала семёрка... Демогоргон меня постиг».",
+            "Сверху открывается дверь и мама Карен зовёт всех спать. Ребята собирают вещи, а Уилл шепчет Майку: «На самом деле выпала 14, огненный шар попал в монстра!»",
+            "Мальчики выходят на улицу и садятся на велосипеды. На развилке у Лихолесья они прощаются и разъезжаются по домам.",
+            "Уилл едет один мимо секретной Лаборатории Хоукинса. Вдруг фара начинает мигать, а из тьмы появляется длинный силуэт без лица!",
+            "Уилл падает с велосипеда и бежит к дому. Внутри никого нет, а дверная ручка начинает медленно опускаться сама по себе...",
+            "Уилл бежит в сарай, запирается и заряжает ружьё. Лампочка над головой вспыхивает с диким треском!",
+            "За его спиной раздаётся рык, свет гаснет — и Уилл исчезает в Изнанке. Конец 1 серии!"
+        ];
+
+        let currentStoryIndex = 0;
+
+        function startStory() {
+            document.getElementById('character-select-container').classList.add('hidden');
+            document.getElementById('story-container').classList.remove('hidden');
+            updateStoryStep();
+        }
+
+        function nextStoryStep() {
+            if (currentStoryIndex < storySteps.length - 1) {
+                currentStoryIndex++;
+                updateStoryStep();
+            } else {
+                document.getElementById('story-title').textContent = "Конец главы";
+                document.getElementById('story-text').textContent = "Глава 1 успешно завершена! Ожидайте следующие серии.";
+                document.getElementById('story-next-btn').style.display = 'none';
+                document.getElementById('story-prev-btn').style.width = '100%';
+            }
+        }
+
+        function prevStoryStep() {
+            if (currentStoryIndex > 0) {
+                currentStoryIndex--;
+                document.getElementById('story-next-btn').style.display = 'block';
+                document.getElementById('story-prev-btn').style.width = '33.333%';
+                updateStoryStep();
+            }
+        }
+
+        function updateStoryStep() {
+            document.getElementById('story-title').textContent = `Отрывок ${currentStoryIndex + 1}`;
+            document.getElementById('story-text').textContent = storySteps[currentStoryIndex];
+            document.getElementById('story-step-indicator').textContent = `Шаг ${currentStoryIndex + 1} из ${storySteps.length}`;
+            
+            const prevBtn = document.getElementById('story-prev-btn');
+            if (currentStoryIndex === 0) {
+                prevBtn.style.opacity = '0.4';
+                prevBtn.style.pointerEvents = 'none';
+            } else {
+                prevBtn.style.opacity = '1';
+                prevBtn.style.pointerEvents = 'auto';
+            }
+        }
+    </script>
+</body>
+</html>
