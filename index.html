@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вам пришло письмо</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        body {
+            background-color: #121212;
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+            transition: background 1s ease;
+        }
+
+        /* Экран с конвертом */
+        .envelope-wrapper {
+            perspective: 1000px;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .envelope {
+            width: 300px;
+            height: 200px;
+            background: #2b2b2b;
+            position: relative;
+            border-radius: 5px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.7);
+            border: 2px solid #444;
+            transition: transform 0.6s ease, opacity 0.5s ease;
+        }
+
+        .envelope-flap {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 0;
+            border-left: 150px solid transparent;
+            border-right: 150px solid transparent;
+            border-top: 110px solid #3a3a3a;
+            transform-origin: top;
+            transition: transform 0.5s ease;
+            z-index: 3;
+        }
+
+        .envelope-title {
+            position: absolute;
+            bottom: 20px;
+            width: 100%;
+            text-align: center;
+            color: #888;
+            font-size: 14px;
+        }
+
+        /* Открытый конверт */
+        .envelope.open .envelope-flap {
+            transform: rotateX(180deg);
+        }
+
+        /* Кровавое письмо */
+        .letter-card {
+            display: none;
+            background: #1a0505;
+            border: 2px solid #8b0000;
+            box-shadow: 0 0 25px rgba(139, 0, 0, 0.6), inset 0 0 15px rgba(255, 0, 0, 0.2);
+            padding: 30px;
+            border-radius: 10px;
+            max-width: 450px;
+            width: 90%;
+            text-align: center;
+            color: #ff4444;
+            animation: fadeIn 1s forwards;
+            position: relative;
+        }
+
+        .blood-title {
+            font-size: 24px;
+            color: #ff0000;
+            text-shadow: 0 0 10px #8b0000;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .letter-text {
+            font-size: 16px;
+            line-height: 1.5;
+            color: #ffcccccc;
+            margin-bottom: 20px;
+        }
+
+        .timer-box {
+            font-size: 12px;
+            color: #666;
+            margin-top: 15px;
+        }
+
+        /* Жуткий режим (через 5 минут) */
+        body.scary-mode {
+            background-color: #000000;
+            animation: flash 0.15s infinite alternate;
+        }
+
+        .scary-card {
+            background: #000 !important;
+            border: 3px solid #ff0000 !important;
+            box-shadow: 0 0 50px #ff0000 !important;
+            color: #ff0000 !important;
+        }
+
+        .glitch {
+            font-size: 28px;
+            font-weight: bold;
+            animation: glitchText 0.1s infinite;
+        }
+
+        .scary-log {
+            text-align: left;
+            font-size: 14px;
+            color: #ff0000;
+            margin-top: 20px;
+            background: #0a0000;
+            padding: 10px;
+            border: 1px solid #550000;
+            height: 150px;
+            overflow: hidden;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes glitchText {
+            0% { transform: translate(0); }
+            50% { transform: translate(-3px, 2px); }
+            100% { transform: translate(3px, -2px); }
+        }
+
+        @keyframes flash {
+            0% { background-color: #000; }
+            100% { background-color: #0a0000; }
+        }
+
+        .click-hint {
+            margin-top: 15px;
+            color: #aaa;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Шаг 1: Конверт -->
+    <div id="envelope-container" class="envelope-wrapper" onclick="openEnvelope()">
+        <div class="envelope" id="envelope">
+            <div class="envelope-flap"></div>
+            <div class="envelope-title">✉️ Нажми, чтобы открыть</div>
+        </div>
+        <p class="click-hint">Вам поступило новое личное сообщение...</p>
+    </div>
+
+    <!-- Шаг 2: Кровавое письмо -->
+    <div id="letter" class="letter-card">
+        <h2 class="blood-title">🩸 ОШИБКА ДОСТУПА 🩸</h2>
+        <p class="letter-text">
+            Прошлая ссылка была <strong>неправдой</strong>...<br><br>
+            Ты действительно думал, что всё так просто? Настоящие данные спрятаны здесь. Держи вот это.
+        </p>
+        <p style="color: #ff0000; font-size: 14px;">[ СИСТЕМА НАЧАЛА ОТСЧЕТ ]</p>
+        
+        <div class="timer-box">
+            Осталось до синхронизации: <span id="countdown">05:00</span>
+        </div>
+    </div>
+
+    <!-- Шаг 3: Жуткий блок (Появляется в конце) -->
+    <div id="scary-block" class="letter-card scary-card" style="display: none;">
+        <h1 class="glitch">КРИТИЧЕСКАЯ УГРОЗА</h1>
+        <p style="margin-top: 10px; font-weight: bold;">ВЫ СЛИШКОМ ДОЛГО СМОТРЕЛИ СЮДА</p>
+        <div class="scary-log" id="scary-log">
+            > ПОДКЛЮЧЕНИЕ УСТАНОВЛЕННО...<br>
+            > СКАНИРОВАНИЕ КАМЕРЫ И ЭКРАНА...<br>
+            > ВСЕ СИГНАЛЫ ПЕРЕХВАТЧЕНЫ...<br>
+        </div>
+    </div>
+
+    <script>
+        let timeLeft = 5; // Для теста поставлено 5 секунд. 
+        // Чтобы сделать РОВНО 5 минут, замени 5 на 300 (300 секунд = 5 минут):
+        // let timeLeft = 300;
+
+        function openEnvelope() {
+            const env = document.getElementById('envelope');
+            env.classList.add('open');
+            
+            setTimeout(() => {
+                document.getElementById('envelope-container').style.display = 'none';
+                document.getElementById('letter').style.display = 'block';
+                startTimer();
+            }, 700);
+        }
+
+        function startTimer() {
+            const timerElement = document.getElementById('countdown');
+            
+            const interval = setInterval(() => {
+                let minutes = Math.floor(timeLeft / 60);
+                let seconds = timeLeft % 60;
+                
+                minutes = minutes < 10 ? '0' + minutes : minutes;
+                seconds = seconds < 10 ? '0' + seconds : seconds;
+                
+                timerElement.innerText = `${minutes}:${seconds}`;
+
+                if (timeLeft <= 0) {
+                    clearInterval(interval);
+                    triggerScaryMode();
+                }
+                timeLeft--;
+            }, 1000);
+        }
+
+        function triggerScaryMode() {
+            document.body.classList.add('scary-mode');
+            document.getElementById('letter').style.display = 'none';
+            
+            const scaryBlock = document.getElementById('scary-block');
+            scaryBlock.style.display = 'block';
+
+            const log = document.getElementById('scary-log');
+            const messages = [
+                "> ОШИБКА 0x666: ПОТЕРИ ЗАЩИТЫ!",
+                "> МЫ ЗНАЕМ, ГДЕ ТЫ НАХОДИШЬСЯ...",
+                "> ОТКЛЮЧЕНИЕ УСТРОЙСТВА НЕВОЗМОЖНО!",
+                "> СИСТЕМА УПРАВЛЯЕТСЯ ВНЕШНИМ СЕРВЕРОМ...",
+                "> ВЫ В ЛОВУШКЕ. 00:00:00"
+            ];
+
+            let i = 0;
+            setInterval(() => {
+                if (i < messages.length) {
+                    log.innerHTML += messages[i] + "<br>";
+                    i++;
+                }
+            }, 800);
+        }
+    </script>
+</body>
+</html>
