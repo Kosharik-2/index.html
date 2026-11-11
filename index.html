@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Загадки Вселенной</title>
+    <style>
+        body { background: #0b0b0b; color: #00ff66; font-family: monospace; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; overflow: hidden; }
+        .box { background: #111; border: 2px solid #222; padding: 25px; border-radius: 10px; width: 380px; text-align: center; box-shadow: 0 0 15px rgba(0,255,100,0.1); }
+        button { background: #1a1a1a; color: #00ff66; border: 1px solid #00ff66; padding: 10px; width: 100%; margin: 8px 0; cursor: pointer; border-radius: 5px; font-family: monospace; }
+        button:hover { background: #00ff66; color: #000; }
+        .scary { background: #000 !important; border-color: #ff0000 !important; color: #ff0000 !important; animation: glitch 0.1s infinite; }
+        @keyframes glitch { 0% { transform: translate(0); } 50% { transform: translate(-4px, 4px); } 100% { transform: translate(4px, -4px); } }
+    </style>
+</head>
+<body>
+
+    <div class="box" id="app">
+        <h3 id="q-num">Вопрос 1 из 5</h3>
+        <p id="q-text" style="margin: 20px 0; color: #fff;"></p>
+        <div id="btns"></div>
+    </div>
+
+    <script>
+        const quiz = [
+            { q: "Что находилось до Большого взрыва?", opts: ["Ничего (даже времени не было)", "Другая вселенная", "Сингулярность", "Неизвестно науке"] },
+            { q: "Какова истинная природа темной материи?", opts: ["Гипотетические частицы", "Искривление пространства", "Скрытые измерения", "Наука не знает ответа"] },
+            { q: "Существует ли предел человеческому сознанию?", opts: ["Да, ограничен мозгом", "Нет предела", "Ограничен квантовыми законами", "Невозможно измерить"] },
+            { q: "Что скрывается за горизонтом событий черной дыры?", opts: ["Гравитационная сингулярность", "Другой мир", "Ничто", "Тайна квантов"] },
+            { q: "Является ли наша Вселенная симуляцией?", opts: ["Да, это код", "Нет, всё реально", "Вероятность 50 на 50", "Мы не можем проверить"] }
+        ];
+
+        let step = 0;
+
+        function loadQuestion() {
+            if (step < quiz.length) {
+                document.getElementById('q-num').innerText = `Вопрос ${step + 1} из 5`;
+                document.getElementById('q-text').innerText = quiz[step].q;
+                let btnsHtml = "";
+                quiz[step].opts.forEach(opt => {
+                    btnsHtml += `<button onclick="nextQ()">${opt}</button>`;
+                });
+                document.getElementById('btns').innerHTML = btnsHtml;
+            } else {
+                triggerHorror();
+            }
+        }
+
+        function nextQ() {
+            step++;
+            loadQuestion();
+        }
+
+        function triggerHorror() {
+            const app = document.getElementById('app');
+            document.body.style.background = "#050000";
+            app.className = "box scary";
+            app.innerHTML = `
+                <h1 style="font-size: 26px; text-shadow: 0 0 10px red;">СИСТЕМНАЯ ОШИБКА</h1>
+                <p style="font-weight: bold; margin: 15px 0;">ТЫ ОТВЕТИЛ НА ВСЕ ВОПРОСЫ...</p>
+                <p style="font-size: 13px; color: #ff4444;">Но теперь система знает о тебе всё. Твой IP зафиксирован. Мы уже смотрим в твой экран.</p>
+                <div style="margin-top: 20px; font-size: 12px; color: #880000;">ПОБЕГ НЕВОЗМОЖЕН.</div>
+            `;
+        }
+
+        loadQuestion();
+    </script>
+</body>
+</html>
