@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Экзамен Разума</title>
+    <style>
+        body { background: #050505; color: #00ff66; font-family: monospace; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; overflow: hidden; }
+        .box { background: #111; border: 2px solid #222; padding: 25px; border-radius: 10px; width: 380px; text-align: center; box-shadow: 0 0 15px rgba(0,255,100,0.1); }
+        button { background: #1a1a1a; color: #00ff66; border: 1px solid #00ff66; padding: 10px; width: 100%; margin: 8px 0; cursor: pointer; border-radius: 5px; font-family: monospace; }
+        button:hover { background: #00ff66; color: #000; }
+        
+        /* Жесткий режим кошмара */
+        .nightmare { 
+            background: #000 !important; 
+            border: 3px solid #ff0000 !important; 
+            color: #ff0000 !important; 
+            box-shadow: 0 0 50px #ff0000 !important;
+            animation: shake 0.08s infinite alternate; 
+        }
+        body.flash-bg { animation: bgFlash 0.1s infinite; }
+
+        @keyframes shake {
+            0% { transform: translate(3px, -3px) rotate(0deg); }
+            50% { transform: translate(-3px, 3px) rotate(-1deg); }
+            100% { transform: translate(2px, -2px) rotate(1deg); }
+        }
+        @keyframes bgFlash {
+            0% { background: #000; }
+            50% { background: #200000; }
+            100% { background: #000; }
+        }
+        .glitch-red { text-shadow: 2px 0 red, -2px 0 cyan; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <div class="box" id="app">
+        <h3 id="q-num">Вопрос 1 из 5</h3>
+        <p id="q-text" style="margin: 20px 0; color: #fff;"></p>
+        <div id="btns"></div>
+    </div>
+
+    <script>
+        const quiz = [
+            { q: "Что находилось до Большого взрыва?", opts: ["Ничего (даже времени не было)", "Другая вселенная", "Сингулярность", "Неизвестно науке"] },
+            { q: "Какова истинная природа темной материи?", opts: ["Гипотетические частицы", "Искривление пространства", "Скрытые измерения", "Наука не знает ответа"] },
+            { q: "Существует ли предел человеческому сознанию?", opts: ["Да, ограничен мозгом", "Нет предела", "Ограничен квантовыми законами", "Невозможно измерить"] },
+            { q: "Что скрывается за горизонтом событий черной дыры?", opts: ["Гравитационная сингулярность", "Другой мир", "Ничто", "Тайна квантов"] },
+            { q: "Является ли наша Вселенная симуляцией?", opts: ["Да, это код", "Нет, всё реально", "Вероятность 50 на 50", "Мы не можем проверить"] }
+        ];
+
+        let step = 0;
+
+        function loadQuestion() {
+            if (step < quiz.length) {
+                document.getElementById('q-num').innerText = `Вопрос ${step + 1} из 5`;
+                document.getElementById('q-text').innerText = quiz[step].q;
+                let btnsHtml = "";
+                quiz[step].opts.forEach(opt => {
+                    btnsHtml += `<button onclick="nextQ()">${opt}</button>`;
+                });
+                document.getElementById('btns').innerHTML = btnsHtml;
+            } else {
+                triggerMaximumHorror();
+            }
+        }
+
+        function nextQ() {
+            step++;
+            loadQuestion();
+        }
+
+        function triggerMaximumHorror() {
+            document.body.className = "flash-bg";
+            const app = document.getElementById('app');
+            app.className = "box nightmare";
+            
+            app.innerHTML = `
+                <h1 class="glitch-red" style="font-size: 28px;">ОШИБКА 0xDEAD</h1>
+                <p style="font-weight: bold; margin: 10px 0; color: #ff3333;">ТЫ ДОШЕЛ ДО КОНЦА.</p>
+                <div id="terminal" style="text-align: left; font-size: 11px; color: #ff5555; background: #0a0000; padding: 8px; border: 1px solid #400; height: 110px; overflow: hidden; margin-top: 10px;">
+                    > Доступ к камере: РАЗРЕШЕН<br>
+                    > Выгрузка геолокации... УСПЕШНО<br>
+                </div>
+                <p style="font-size: 12px; margin-top: 12px; color: #fff;">Мы уже стоим за твоей дверью.</p>
+            `;
+
+            const logs = [
+                "> СКАНИРОВАНИЕ ЛИЦА ЗАВЕРШЕНО...",
+                "> УДАЛЕНИЕ СИСТЕМНЫХ ФАЙЛОВ...",
+                "> ОТПРАВКА ДАННЫХ НА СЕРВЕР... [████████--] 89%",
+                "> ВНИМАНИЕ: ВЫ НЕ МОЖЕТЕ ЗАКРЫТЬ ВКЛАДКУ",
+                "> ВЫ В ЛОВУШКЕ НАВСЕГДА."
+            ];
+
+            let i = 0;
+            const term = document.getElementById('terminal');
+            setInterval(() => {
+                if(i < logs.length) {
+                    term.innerHTML += logs[i] + "<br>";
+                    i++;
+                }
+            }, 600);
+        }
+
+        loadQuestion();
+    </script>
+</body>
+</html>
